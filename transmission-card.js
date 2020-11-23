@@ -99,6 +99,7 @@ class TransmissionCard extends HTMLElement {
   width: 85%;
   overflow: hidden;
   z-index: 2;
+  color: var(--text-light-primary-color, var(--primary-text-color));
 }
 .percent {
   vertical-align: middle;
@@ -106,6 +107,7 @@ class TransmissionCard extends HTMLElement {
   z-index: 2;
   margin-left: 1.7em;
   margin-right: 0.7em;
+  color: var(--text-light-primary-color, var(--primary-text-color));
 }
 .downloading {
   background-color: var(--paper-item-icon-active-color);
@@ -114,10 +116,10 @@ class TransmissionCard extends HTMLElement {
   color: var(--paper-item-icon-active-color);
 }
 .seeding {
-  background-color: var(--primary-color);
+  background-color: var(--light-primary-color);
 }
 .c-seeding {
-  color: var(--primary-color);
+  color: var(--light-primary-color);
 }
 .stopped {
   background-color: #9e9e9e!important;
@@ -127,7 +129,7 @@ class TransmissionCard extends HTMLElement {
 }
 .up-color {
   width: 2em;
-  color: var(--primary-color);
+  color: var(--light-primary-color);
 }
 .down-color {
   width: 2em;
