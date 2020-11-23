@@ -108,16 +108,16 @@ class TransmissionCard extends HTMLElement {
   margin-right: 0.7em;
 }
 .downloading {
-  background-color: #f7dc6f!important;
+  background-color: var(--paper-item-icon-active-color);
 }
 .c-Downloading {
-  color: #f7dc6f!important;
+  color: var(--paper-item-icon-active-color);
 }
 .seeding {
-  background-color: #a2d9ce!important;
+  background-color: var(--primary-color);
 }
 .c-seeding {
-  color: #a2d9ce!important;
+  color: var(--primary-color);
 }
 .stopped {
   background-color: #9e9e9e!important;
@@ -127,11 +127,11 @@ class TransmissionCard extends HTMLElement {
 }
 .up-color {
   width: 2em;
-  color: #a2d9ce!important;
+  color: var(--primary-color);
 }
 .down-color {
   width: 2em;
-  color: #f7dc6f!important;
+  color: var(--paper-item-icon-active-color);
   margin-left: 1em;
 }
 table {
