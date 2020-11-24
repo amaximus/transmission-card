@@ -5,60 +5,79 @@ class TransmissionCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  _getAttributes(hass ) {
+  _getAttributes(hass) {
     var id = new Array();
     var percent = new Array();
     var name = new Array();
     var state = new Array();
     var added_date = new Array();
     var routeobjarray = [];
-    var downspeed, upspeed, downunit, upunit, tstate;
 
-    var data1 = JSON.parse(JSON.stringify(hass.states['sensor.transmission_total_torrents'].attributes['torrent_info']));
-    var tidx=0;
-    var torrent_data;
-    Object.keys(data1).forEach(function(key) {
-      name[tidx] = key;
-      torrent_data = JSON.parse(JSON.stringify(data1[key]));
-      Object.keys(torrent_data).forEach(function(tkey) {
-        switch (tkey) {
-          case 'id':
-            id[tidx]=torrent_data[tkey];
-            break;
-          case 'percent_done':
-            percent[tidx] = parseInt(torrent_data[tkey]);
-            break;
-          case 'status':
-            state[tidx] = torrent_data[tkey];
-            break;
-          case 'added_date':
-            added_date[tidx] = torrent_data[tkey];
-            break;
-       }
-      });
-      tidx += 1;
-    });
-    //console.log(state);
-    downspeed = hass.states['sensor.transmission_down_speed'].state;
-    downunit = hass.states['sensor.transmission_down_speed'].attributes['unit_of_measurement'];
-    upspeed = hass.states['sensor.transmission_up_speed'].state;
-    upunit = hass.states['sensor.transmission_up_speed'].attributes['unit_of_measurement'];
-    tstate = hass.states['sensor.transmission_status'].state;
+    if ( typeof hass.states['sensor.transmission_total_torrents'] != "undefined" ) {
+      var ttorrents = hass.states['sensor.transmission_total_torrents'].state;
+      if ( ttorrents > 0 ) {
+        var data1 = JSON.parse(JSON.stringify(hass.states['sensor.transmission_total_torrents'].attributes['torrent_info']));
+        var tidx=0;
+        var torrent_data;
+        Object.keys(data1).forEach(function(key) {
+          name[tidx] = key;
+          torrent_data = JSON.parse(JSON.stringify(data1[key]));
+          Object.keys(torrent_data).forEach(function(tkey) {
+            switch (tkey) {
+              case 'id':
+                id[tidx]=torrent_data[tkey];
+                break;
+              case 'percent_done':
+                percent[tidx] = parseInt(torrent_data[tkey]);
+                break;
+              case 'status':
+                state[tidx] = torrent_data[tkey];
+                break;
+              case 'added_date':
+                added_date[tidx] = torrent_data[tkey];
+                break;
+            }
+          });
+          tidx += 1;
+        });
 
-    for (var i=0; i < tidx; i++) {
-      routeobjarray.push({
-        name: name[i],
-        id: id[i],
-        percent: percent[i],
-        state: state[i],
-        added_date: added_date[i],
-        down_speed: downspeed,
-        up_speed: upspeed,
-        down_unit: downunit,
-        up_unit: upunit,
-        tstate: tstate
-      });
+        for (var i=0; i < ttorrents; i++) {
+          routeobjarray.push({
+            name: name[i],
+            id: id[i],
+            percent: percent[i],
+            state: state[i],
+            added_date: added_date[i],
+          });
+        }
+      }
     }
+    return Array.from(routeobjarray.values());
+  }
+
+  _getGAttributes(hass) {
+    var routeobjarray = [];
+    var downspeed, upspeed;
+    var downunit, upunit;
+    var tstate = "no sensor";
+
+    downspeed = upspeed = 0;
+    downunit = upunit = "MB/s";
+
+    if ( typeof hass.states['sensor.transmission_down_speed'] != "undefined" ) {
+      downspeed = hass.states['sensor.transmission_down_speed'].state;
+      downunit = hass.states['sensor.transmission_down_speed'].attributes['unit_of_measurement'];
+      upspeed = hass.states['sensor.transmission_up_speed'].state;
+      upunit = hass.states['sensor.transmission_up_speed'].attributes['unit_of_measurement'];
+      tstate = hass.states['sensor.transmission_status'].state;
+    }
+    routeobjarray.push({
+      down_speed: downspeed,
+      up_speed: upspeed,
+      down_unit: downunit,
+      up_unit: upunit,
+      tstate: tstate,
+    });
     return Array.from(routeobjarray.values());
   }
 
@@ -176,9 +195,9 @@ table {
     `;
   }
 
-  _updateTitle(element, attributes) {
+  _updateTitle(element, gattributes) {
     element.innerHTML = `
-      ${attributes.map((attribute) => `
+      ${gattributes.map((attribute) => `
         <tr><td colspan=5 class="title">Transmission</td></tr>
         <tr>
            <td><span class="status c-${attribute.tstate}">${attribute.tstate}</span></td>
@@ -195,8 +214,9 @@ table {
     const root = this.shadowRoot;
 
     let attributes = this._getAttributes(hass);
+    let gattributes = this._getGAttributes(hass);
 
-    this._updateTitle(root.getElementById('title'), attributes);
+    this._updateTitle(root.getElementById('title'), gattributes);
     this._updateContent(root.getElementById('attributes'), attributes);
   }
 
