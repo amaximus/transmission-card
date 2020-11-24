@@ -30,4 +30,4 @@ Please find below an example of ui-lovelace.yaml:
 ```
 
 Transmission idle:<br />
-![Transmission idle](transmission_idle.jpg)
+![Transmission idle](/transmission_idle.jpg)
