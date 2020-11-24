@@ -27,6 +27,6 @@ Please find below an example of ui-lovelace.yaml:
       - type: custom:transmission-card
 ```
 
-Transmission idle, two torrents stopped:<br />
+Transmission idle:<br />
 ![Transmission idle](transmission_idle.jpg)
 
