@@ -28,8 +28,5 @@ Please find below an example of ui-lovelace.yaml:
 ```
 
 Transmission idle, two torrents stopped:<br />
-![Transmission idle](transmission_idle.png)
-
-Transmission downloading:<br />
-![Transmission downloading](transmission_downloading.png)
+![Transmission idle](transmission_idle.jpg)
 
