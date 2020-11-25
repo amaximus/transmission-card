@@ -7,6 +7,7 @@
 :w
 
 This Lovelace custom card displays torrents information provided by the Transmission Integration.
+It also supports turtle mode and start/stop of all torrents.
 
 #### Installation
 The easiest way to install it is through [HACS (Home Assistant Community Store)](https://custom-components.github.io/hacs/),
@@ -29,5 +30,6 @@ Please find below an example of ui-lovelace.yaml:
       - type: custom:transmission-card
 ```
 
-Transmission idle:<br />
-![Transmission idle](/transmission_idle.jpg)
+
+Transmission idle, two torrents stopped:<br />
+![Transmission idle](https://raw.githubusercontent.com/amaximus/transmission-card/main/transmission_idle.png)

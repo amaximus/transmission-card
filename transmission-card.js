@@ -81,6 +81,16 @@ class TransmissionCard extends HTMLElement {
     return Array.from(routeobjarray.values());
   }
 
+  _toggleTurtle() {
+    const root = this.shadowRoot;
+    this.myhass.callService('switch', 'toggle', { entity_id: 'switch.transmission_turtle_mode' });
+  }
+
+  _startStop() {
+    const root = this.shadowRoot;
+    this.myhass.callService('switch', 'toggle', { entity_id: 'switch.transmission_switch' });
+  }
+
   setConfig(config) {
     const root = this.shadowRoot;
     if (root.lastChild) root.removeChild(root.lastChild);
@@ -171,6 +181,18 @@ table {
   font-size: 1em;
   margin-left: 0.5em;
 }
+.turtle_off {
+  color: var(--light-primary-color);
+}
+.turtle_on {
+  color: var(--paper-item-icon-active-color);
+}
+.start_on {
+  color: var(--light-primary-color);
+}
+.start_off {
+  color: var(--primary-color);
+}
     `;
     content.innerHTML = `
       <table id='title'></table>
@@ -198,20 +220,33 @@ table {
   _updateTitle(element, gattributes) {
     element.innerHTML = `
       ${gattributes.map((attribute) => `
-        <tr><td colspan=5 class="title">Transmission</td></tr>
+        <tr><td colspan=7 class="title">Transmission</td></tr>
         <tr>
            <td><span class="status c-${attribute.tstate}">${attribute.tstate}</span></td>
            <td><ha-icon icon="mdi:download" class="down-color"></td>
            <td>${attribute.down_speed}${attribute.down_unit}</td>
            <td><ha-icon icon="mdi:upload" class="up-color"></td>
            <td>${attribute.up_speed}${attribute.up_unit}</td>
+           <td><ha-icon-button icon="mdi:turtle" title="turtle mode" id="turtle"></ha-icon-button></td>
+           <td><ha-icon-button icon="mdi:stop" title="start/stop all" id="start"></ha-icon-button></td>
         </tr>
       `)[0]}
     `;
+     const root = this.shadowRoot;
+     root.getElementById('turtle').addEventListener('click', this._toggleTurtle.bind(this));
+     root.getElementById('turtle').className = "turtle_" + this.myhass.states['switch.transmission_turtle_mode'].state;
+     root.getElementById('start').addEventListener('click', this._startStop.bind(this));
+     if ( this.myhass.states['switch.transmission_switch'].state == "on" ) {
+       root.getElementById('start').icon = "mdi:stop";
+     } else {
+       root.getElementById('start').icon = "mdi:play";
+     }
+     root.getElementById('start').className = "start_" + this.myhass.states['switch.transmission_switch'].state;
   }
 
   set hass(hass) {
     const root = this.shadowRoot;
+    this.myhass = hass;
 
     let attributes = this._getAttributes(hass);
     let gattributes = this._getGAttributes(hass);
