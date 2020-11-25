@@ -5,89 +5,47 @@ class TransmissionCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  _getAttributes(hass) {
-    var id = new Array();
-    var percent = new Array();
-    var name = new Array();
-    var state = new Array();
-    var added_date = new Array();
-    var routeobjarray = [];
-
-    if ( typeof hass.states['sensor.transmission_total_torrents'] != "undefined" ) {
-      var ttorrents = hass.states['sensor.transmission_total_torrents'].state;
-      if ( ttorrents > 0 ) {
-        var data1 = JSON.parse(JSON.stringify(hass.states['sensor.transmission_total_torrents'].attributes['torrent_info']));
-        var tidx=0;
-        var torrent_data;
-        Object.keys(data1).forEach(function(key) {
-          name[tidx] = key;
-          torrent_data = JSON.parse(JSON.stringify(data1[key]));
-          Object.keys(torrent_data).forEach(function(tkey) {
-            switch (tkey) {
-              case 'id':
-                id[tidx]=torrent_data[tkey];
-                break;
-              case 'percent_done':
-                percent[tidx] = parseInt(torrent_data[tkey]);
-                break;
-              case 'status':
-                state[tidx] = torrent_data[tkey];
-                break;
-              case 'added_date':
-                added_date[tidx] = torrent_data[tkey];
-                break;
-            }
-          });
-          tidx += 1;
+  _getTorrents(hass) {
+    var res = [];
+    if (typeof hass.states['sensor.transmission_total_torrents'] != "undefined") {
+      const data1 = hass.states['sensor.transmission_total_torrents'].attributes['torrent_info'];
+      Object.keys(data1).forEach(function (key) {
+        res.push({
+          name: key,
+          id: data1[key].id,
+          percent: parseInt(data1[key].percent_done, 10),
+          state: data1[key].status,
+          added_date: data1[key].added_date,
         });
-
-        for (var i=0; i < ttorrents; i++) {
-          routeobjarray.push({
-            name: name[i],
-            id: id[i],
-            percent: percent[i],
-            state: state[i],
-            added_date: added_date[i],
-          });
-        }
-      }
+      });
     }
-    return Array.from(routeobjarray.values());
+    return res;
   }
 
   _getGAttributes(hass) {
-    var routeobjarray = [];
-    var downspeed, upspeed;
-    var downunit, upunit;
-    var tstate = "no sensor";
-
-    downspeed = upspeed = 0;
-    downunit = upunit = "MB/s";
-
-    if ( typeof hass.states['sensor.transmission_down_speed'] != "undefined" ) {
-      downspeed = hass.states['sensor.transmission_down_speed'].state;
-      downunit = hass.states['sensor.transmission_down_speed'].attributes['unit_of_measurement'];
-      upspeed = hass.states['sensor.transmission_up_speed'].state;
-      upunit = hass.states['sensor.transmission_up_speed'].attributes['unit_of_measurement'];
-      tstate = hass.states['sensor.transmission_status'].state;
+    if (typeof hass.states['sensor.transmission_down_speed'] != "undefined") {
+      return {
+        down_speed: hass.states['sensor.transmission_down_speed'].state,
+        down_unit: hass.states['sensor.transmission_down_speed'].attributes['unit_of_measurement'],
+        up_speed: hass.states['sensor.transmission_up_speed'].state,
+        up_unit: hass.states['sensor.transmission_up_speed'].attributes['unit_of_measurement'],
+        status: hass.states['sensor.transmission_status'].state
+      }
     }
-    routeobjarray.push({
-      down_speed: downspeed,
-      up_speed: upspeed,
-      down_unit: downunit,
-      up_unit: upunit,
-      tstate: tstate,
-    });
-    return Array.from(routeobjarray.values());
+    return {
+      down_speed: undefined,
+      up_speed: undefined,
+      down_unit: "MB/s",
+      up_unit: "MB/s",
+      status: "no sensor"
+    };
   }
 
   _toggleTurtle() {
-    const root = this.shadowRoot;
     this.myhass.callService('switch', 'toggle', { entity_id: 'switch.transmission_turtle_mode' });
   }
 
   _startStop() {
-    const root = this.shadowRoot;
     this.myhass.callService('switch', 'toggle', { entity_id: 'switch.transmission_switch' });
   }
 
@@ -96,14 +54,15 @@ class TransmissionCard extends HTMLElement {
     if (root.lastChild) root.removeChild(root.lastChild);
 
     const cardConfig = Object.assign({}, config);
+
     const card = document.createElement('ha-card');
+    card.setAttribute('header', 'Transmission');
     const content = document.createElement('div');
     const style = document.createElement('style');
     style.textContent = `
 #attributes {
   margin-top: 1.4em;
   padding-bottom: 0.8em;
-  display: block;
 }
 .progressbar {
   border-radius: 0.4em;
@@ -118,21 +77,19 @@ class TransmissionCard extends HTMLElement {
 }
 .progressin {
   border-radius: 0.4em;
-  height: 1.4em;
+  height: 100%;
   z-index: 1;
   position: absolute;
 }
 .name {
   margin-left: 0.7em;
-  float: left;
-  width: 85%;
+  width: calc(100% - 60px);
   overflow: hidden;
   z-index: 2;
   color: var(--text-light-primary-color, var(--primary-text-color));
 }
 .percent {
   vertical-align: middle;
-  float: right;
   z-index: 2;
   margin-left: 1.7em;
   margin-right: 0.7em;
@@ -166,16 +123,12 @@ class TransmissionCard extends HTMLElement {
   margin-left: 1em;
 }
 table {
+  margin-top: -20px;
   border: none;
-  padding-top: 1.4em;
   padding-left: 1.3em;
   margin-left: 0em;
   margin-right: 1em;
   margin-bottom: -1.3em;
-}
-.title {
-  font-size: 2em;
-  padding: 0.2em 0em 0.2em 0em;
 }
 .status {
   font-size: 1em;
@@ -196,7 +149,7 @@ table {
     `;
     content.innerHTML = `
       <table id='title'></table>
-      <span id='attributes'></span>
+      <div id='attributes'></div>
     `;
     card.appendChild(style);
     card.appendChild(content);
@@ -204,14 +157,14 @@ table {
     this._config = cardConfig;
   }
 
-  _updateContent(element, attributes) {
+  _updateContent(element, torrents) {
     element.innerHTML = `
-      ${attributes.map((attribute) => `
+      ${torrents.map((torrent) => `
         <div class="progressbar">
-          <div class="${attribute.state} progressin" style="width:${attribute.percent}%">
+          <div class="${torrent.state} progressin" style="width:${torrent.percent}%">
           </div>
-          <div class="name">${attribute.name}</div>
-          <div class="percent">${attribute.percent}%</div>
+          <div class="name">${torrent.name}</div>
+          <div class="percent">${torrent.percent}%</div>
         </div>
       `).join('')}
     `;
@@ -219,40 +172,41 @@ table {
 
   _updateTitle(element, gattributes) {
     element.innerHTML = `
-      ${gattributes.map((attribute) => `
-        <tr><td colspan=7 class="title">Transmission</td></tr>
         <tr>
-           <td><span class="status c-${attribute.tstate}">${attribute.tstate}</span></td>
+           <td><span class="status c-${gattributes.status}">${gattributes.status}</span></td>
            <td><ha-icon icon="mdi:download" class="down-color"></td>
-           <td>${attribute.down_speed}${attribute.down_unit}</td>
+           <td>${gattributes.down_speed} ${gattributes.down_unit}</td>
            <td><ha-icon icon="mdi:upload" class="up-color"></td>
-           <td>${attribute.up_speed}${attribute.up_unit}</td>
+           <td>${gattributes.up_speed} ${gattributes.up_unit}</td>
            <td><ha-icon-button icon="mdi:turtle" title="turtle mode" id="turtle"></ha-icon-button></td>
            <td><ha-icon-button icon="mdi:stop" title="start/stop all" id="start"></ha-icon-button></td>
         </tr>
-      `)[0]}
     `;
-     const root = this.shadowRoot;
-     root.getElementById('turtle').addEventListener('click', this._toggleTurtle.bind(this));
-     root.getElementById('turtle').className = "turtle_" + this.myhass.states['switch.transmission_turtle_mode'].state;
-     root.getElementById('start').addEventListener('click', this._startStop.bind(this));
-     if ( this.myhass.states['switch.transmission_switch'].state == "on" ) {
-       root.getElementById('start').icon = "mdi:stop";
-     } else {
-       root.getElementById('start').icon = "mdi:play";
-     }
-     root.getElementById('start').className = "start_" + this.myhass.states['switch.transmission_switch'].state;
+
+    const root = this.shadowRoot;
+    var turtleElement = root.getElementById('turtle');
+    turtleElement.addEventListener('click', this._toggleTurtle.bind(this));
+    turtleElement.className = "turtle_" + this.myhass.states['switch.transmission_turtle_mode'].state;
+
+    var playStartElement = root.getElementById('start')
+    playStartElement.addEventListener('click', this._startStop.bind(this));
+    if (this.myhass.states['switch.transmission_switch'].state === "on") {
+      playStartElement.icon = "mdi:stop";
+    } else {
+      playStartElement.icon = "mdi:play";
+    }
+    playStartElement.className = "start_" + this.myhass.states['switch.transmission_switch'].state;
   }
 
   set hass(hass) {
     const root = this.shadowRoot;
     this.myhass = hass;
 
-    let attributes = this._getAttributes(hass);
+    let torrents = this._getTorrents(hass);
     let gattributes = this._getGAttributes(hass);
 
     this._updateTitle(root.getElementById('title'), gattributes);
-    this._updateContent(root.getElementById('attributes'), attributes);
+    this._updateContent(root.getElementById('attributes'), torrents);
   }
 
   getCardSize() {
