@@ -31,5 +31,5 @@ Please find below an example of ui-lovelace.yaml:
 ```
 
 
-Transmission idle, two torrents stopped:<br />
+Transmission idle:<br />
 ![Transmission idle](https://raw.githubusercontent.com/amaximus/transmission-card/main/transmission_idle.jpg)
