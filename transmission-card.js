@@ -53,7 +53,14 @@ class TransmissionCard extends HTMLElement {
     const root = this.shadowRoot;
     if (root.lastChild) root.removeChild(root.lastChild);
 
-    const cardConfig = Object.assign({}, config);
+    const defaultConfig = {
+      'no_torrent_label' : 'No torrents'
+    }
+
+    this._config = {
+      ...defaultConfig,
+      ...config
+    };
 
     const card = document.createElement('ha-card');
     card.setAttribute('header', 'Transmission');
@@ -146,6 +153,9 @@ table {
 .start_off {
   color: var(--primary-color);
 }
+.no-torrent {
+  margin-left: 1.4em;
+}
     `;
     content.innerHTML = `
       <table id='title'></table>
@@ -154,11 +164,11 @@ table {
     card.appendChild(style);
     card.appendChild(content);
     root.appendChild(card)
-    this._config = cardConfig;
   }
 
   _updateContent(element, torrents) {
-    element.innerHTML = `
+    if (torrents.length > 0) {
+      element.innerHTML = `
       ${torrents.map((torrent) => `
         <div class="progressbar">
           <div class="${torrent.state} progressin" style="width:${torrent.percent}%">
@@ -168,6 +178,10 @@ table {
         </div>
       `).join('')}
     `;
+    } 
+    else {
+      element.innerHTML = `<div class="no-torrent">${this._config.no_torrent_label}</div>`;
+    }
   }
 
   _updateTitle(element, gattributes) {
