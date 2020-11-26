@@ -9,7 +9,7 @@ class TransmissionCard extends HTMLElement {
     var res = [];
     if (typeof hass.states['sensor.transmission_total_torrents'] != "undefined") {
       const data1 = hass.states['sensor.transmission_total_torrents'].attributes['torrent_info'];
-      Object.keys(data1).forEach(function (key) {
+      Object.keys(data1 || {}).forEach(function (key) {
         res.push({
           name: key,
           id: data1[key].id,
