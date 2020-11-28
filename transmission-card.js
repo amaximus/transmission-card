@@ -105,7 +105,7 @@ class TransmissionCard extends HTMLElement {
 .downloading {
   background-color: var(--paper-item-icon-active-color);
 }
-.c-Downloading {
+.c-Downloading, .c-UpDown {
   color: var(--paper-item-icon-active-color);
 }
 .seeding {
@@ -115,10 +115,10 @@ class TransmissionCard extends HTMLElement {
   color: var(--light-primary-color);
 }
 .stopped {
-  background-color: #9e9e9e!important;
+  background-color: var(--label-badge-grey);
 }
 .c-idle {
-  color: #9e9e9e!important;
+  color: var(--label-badge-grey);
 }
 .up-color {
   width: 2em;
@@ -187,7 +187,7 @@ table {
   _updateTitle(element, gattributes) {
     element.innerHTML = `
         <tr>
-           <td><span class="status c-${gattributes.status}">${gattributes.status}</span></td>
+           <td><span class="status c-${gattributes.status.replace('/','')}">${gattributes.status}</span></td>
            <td><ha-icon icon="mdi:download" class="down-color"></td>
            <td>${gattributes.down_speed} ${gattributes.down_unit}</td>
            <td><ha-icon icon="mdi:upload" class="up-color"></td>
