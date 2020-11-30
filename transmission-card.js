@@ -16,6 +16,7 @@ class TransmissionCard extends HTMLElement {
           percent: parseInt(data1[key].percent_done, 10),
           state: data1[key].status,
           added_date: data1[key].added_date,
+          eta: data1[key].eta,
         });
       });
     }
@@ -68,6 +69,7 @@ class TransmissionCard extends HTMLElement {
       'hide_startstop': false,
       'hide_type': false,
       'default_type': 'total',
+      'display_mode': 'compact',
     }
 
     this._config = {
@@ -182,7 +184,30 @@ table {
   padding-left: 1em;
   padding-right: 1em;
 }
-    `;
+.torrents {
+  margin-left: 1.4em;
+  margin-right: 1.4em;
+}
+.torrent:not(:last-child) {
+  border-bottom: 1px solid var(--divider-color);
+}
+.torrents .progressbar {
+  margin: 0 0 0 0;
+  height: 4px;
+}
+.torrent_name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.torrent_state {
+  font-size: 0.7em;
+  text-transform: capitalize;
+}
+.torrent_details {
+  font-size: 0.7em;
+} 
+`;
     content.innerHTML = `
       <table id='title'></table>
       <div id='attributes'></div>
@@ -194,16 +219,31 @@ table {
 
   _updateContent(element, torrents) {
     if (torrents.length > 0) {
-      element.innerHTML = `
-      ${torrents.map((torrent) => `
-        <div class="progressbar">
-          <div class="${torrent.state} progressin" style="width:${torrent.percent}%">
+      if (this._config.display_mode === 'compact') {
+        element.innerHTML = `
+        ${torrents.map((torrent) => `
+          <div class="progressbar">
+            <div class="${torrent.state} progressin" style="width:${torrent.percent}%">
+            </div>
+            <div class="name">${torrent.name}</div>
+            <div class="percent">${torrent.percent}%</div>
           </div>
-          <div class="name">${torrent.name}</div>
-          <div class="percent">${torrent.percent}%</div>
+        `).join('')}
+      `;
+      } else {
+        element.innerHTML = `
+        <div class="torrents">
+          ${torrents.map((torrent) => `<div class="torrent">
+            <div class="torrent_name">${torrent.name}</div>
+            <div class="torrent_state">${torrent.state}</div>
+            <div class="progressbar">
+              <div class="${torrent.state} progressin" style="width:${torrent.percent}%">
+              </div>
+            </div>
+            <div class="torrent_details">${torrent.percent} %</div>
+          </div>`).join('')}
         </div>
-      `).join('')}
-    `;
+      `}
     } 
     else {
       element.innerHTML = `<div class="no-torrent">${this._config.no_torrent_label}</div>`;
