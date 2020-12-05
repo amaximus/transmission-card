@@ -63,6 +63,11 @@ class TransmissionCard extends HTMLElement {
     const root = this.shadowRoot;
     if (root.lastChild) root.removeChild(root.lastChild);
 
+    if (config.display_mode && 
+      !['compact', 'full'].includes(config.display_mode)) {
+        throw new Error('display_mode accepts only "compact" and "full" as value');
+      }
+
     const defaultConfig = {
       'no_torrent_label': 'No torrents',
       'hide_turtle': false,
