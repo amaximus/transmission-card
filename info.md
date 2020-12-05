@@ -35,7 +35,7 @@ resources:
 | no_torrent_label | string       | optional     | `No Torrents`           | label displayed with no torrents    |
 | hide_turtle      | boolean      | optional     | false                   | hide turtle button                  |
 | hide_startstop   | boolean      | optional     | false                   | hide start/stop button              |
-| show_type        | boolean      | optional     | true                    | show type of torrents displayed     |
+| hide_type        | boolean      | optional     | true                    | hide type of torrents displayed     |
 | default_type     | string       | optional     | `total`                 | type of torrents to display at start |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.

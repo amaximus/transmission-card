@@ -66,7 +66,7 @@ class TransmissionCard extends HTMLElement {
       'no_torrent_label': 'No torrents',
       'hide_turtle': false,
       'hide_startstop': false,
-      'show_type': true,
+      'hide_type': false,
       'default_type': 'total',
     }
 
@@ -210,7 +210,7 @@ table {
     }
   }
 
-  _updateTitle(element, gattributes, hturtle, hstartstop, shtype) {
+  _updateTitle(element, gattributes, hturtle, hstartstop, htype) {
     element.innerHTML = `
         <tr>
            <td><span class="status c-${gattributes.status.replace('/','')}">${gattributes.status}</span></td>
@@ -227,11 +227,11 @@ table {
     const root = this.shadowRoot;
 
     var ttypeElement = root.getElementById('ttype');
-    if ( shtype ) {
+    if ( htype ) {
+      ttypeElement.style.display = "none";
+    } else {
       ttypeElement.innerHTML = this._ttype;
       ttypeElement.addEventListener('click', this._toggleType.bind(this));
-    } else {
-      ttypeElement.style.display = "none";
     }
 
     var turtleElement = root.getElementById('turtle');
@@ -261,11 +261,11 @@ table {
     //const config = this._config;
     this.myhass = hass;
 
-    let { hide_turtle, hide_startstop, show_type } = this._config;
+    let { hide_turtle, hide_startstop, hide_type } = this._config;
     let torrents = this._getTorrents(hass, this._ttype);
     let gattributes = this._getGAttributes(hass);
 
-    this._updateTitle(root.getElementById('title'), gattributes, hide_turtle, hide_startstop, show_type);
+    this._updateTitle(root.getElementById('title'), gattributes, hide_turtle, hide_startstop, hide_type);
     this._updateContent(root.getElementById('attributes'), torrents);
   }
 
