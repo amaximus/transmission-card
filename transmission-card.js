@@ -174,7 +174,7 @@ table {
 }
 #ttype {
   background-color: var(--light-primary-color);
-  color: var(--primary-text-color);
+  color: var(--text-light-primary-color, var(--primary-text-color));
   border-radius: 0.4em;
   margin-bottom: 0.7em;
   height: 1.5em;
