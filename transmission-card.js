@@ -5,10 +5,10 @@ class TransmissionCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  _getTorrents(hass) {
+  _getTorrents(hass, ttype) {
     var res = [];
-    if (typeof hass.states['sensor.transmission_total_torrents'] != "undefined") {
-      const data1 = hass.states['sensor.transmission_total_torrents'].attributes['torrent_info'];
+    if (typeof hass.states['sensor.transmission_' + ttype + '_torrents'] != "undefined") {
+      const data1 = hass.states['sensor.transmission_' + ttype + '_torrents'].attributes['torrent_info'];
       Object.keys(data1 || {}).forEach(function (key) {
         res.push({
           name: key,
@@ -45,6 +45,15 @@ class TransmissionCard extends HTMLElement {
     this.myhass.callService('switch', 'toggle', { entity_id: 'switch.transmission_turtle_mode' });
   }
 
+  _toggleType() {
+
+    const torrent_types = ['total','active','completed','paused','started']
+
+    const currentIndex = torrent_types.indexOf(this._ttype);
+    const nextIndex = (currentIndex + 1) % torrent_types.length;
+    this._ttype = torrent_types[nextIndex];
+  }
+
   _startStop() {
     this.myhass.callService('switch', 'toggle', { entity_id: 'switch.transmission_switch' });
   }
@@ -54,13 +63,19 @@ class TransmissionCard extends HTMLElement {
     if (root.lastChild) root.removeChild(root.lastChild);
 
     const defaultConfig = {
-      'no_torrent_label' : 'No torrents'
+      'no_torrent_label': 'No torrents',
+      'hide_turtle': false,
+      'hide_startstop': false,
+      'show_type': true,
+      'default_type': 'total',
     }
 
     this._config = {
       ...defaultConfig,
       ...config
     };
+    let { default_type } = this._config;
+    this._ttype = default_type;
 
     const card = document.createElement('ha-card');
     card.setAttribute('header', 'Transmission');
@@ -133,6 +148,7 @@ table {
   margin-top: -20px;
   border: none;
   padding-left: 1.3em;
+  padding-right: 1.3em;
   margin-left: 0em;
   margin-right: 1em;
   margin-bottom: -1.3em;
@@ -155,6 +171,16 @@ table {
 }
 .no-torrent {
   margin-left: 1.4em;
+}
+#ttype {
+  background-color: var(--light-primary-color);
+  color: var(--primary-text-color);
+  border-radius: 0.4em;
+  margin-bottom: 0.7em;
+  height: 1.5em;
+  display: flex;
+  padding-left: 1em;
+  padding-right: 1em;
 }
     `;
     content.innerHTML = `
@@ -184,7 +210,7 @@ table {
     }
   }
 
-  _updateTitle(element, gattributes) {
+  _updateTitle(element, gattributes, hturtle, hstartstop, shtype) {
     element.innerHTML = `
         <tr>
            <td><span class="status c-${gattributes.status.replace('/','')}">${gattributes.status}</span></td>
@@ -194,32 +220,52 @@ table {
            <td>${gattributes.up_speed} ${gattributes.up_unit}</td>
            <td><ha-icon-button icon="mdi:turtle" title="turtle mode" id="turtle"></ha-icon-button></td>
            <td><ha-icon-button icon="mdi:stop" title="start/stop all" id="start"></ha-icon-button></td>
+           <td><p id="ttype"></p></td>
         </tr>
     `;
 
     const root = this.shadowRoot;
+
+    var ttypeElement = root.getElementById('ttype');
+    if ( shtype ) {
+      ttypeElement.innerHTML = this._ttype;
+      ttypeElement.addEventListener('click', this._toggleType.bind(this));
+    } else {
+      ttypeElement.style.display = "none";
+    }
+
     var turtleElement = root.getElementById('turtle');
-    turtleElement.addEventListener('click', this._toggleTurtle.bind(this));
-    turtleElement.className = "turtle_" + this.myhass.states['switch.transmission_turtle_mode'].state;
+    if ( hturtle ) {
+      turtleElement.style.display = "none";
+    } else {
+      turtleElement.addEventListener('click', this._toggleTurtle.bind(this));
+      turtleElement.className = "turtle_" + this.myhass.states['switch.transmission_turtle_mode'].state;
+    }
 
     var playStartElement = root.getElementById('start')
-    playStartElement.addEventListener('click', this._startStop.bind(this));
-    if (this.myhass.states['switch.transmission_switch'].state === "on") {
-      playStartElement.icon = "mdi:stop";
+    if ( hstartstop ) {
+      playStartElement.style.display = "none";
     } else {
-      playStartElement.icon = "mdi:play";
+      playStartElement.addEventListener('click', this._startStop.bind(this));
+      if (this.myhass.states['switch.transmission_switch'].state === "on") {
+        playStartElement.icon = "mdi:stop";
+      } else {
+        playStartElement.icon = "mdi:play";
+      }
+      playStartElement.className = "start_" + this.myhass.states['switch.transmission_switch'].state;
     }
-    playStartElement.className = "start_" + this.myhass.states['switch.transmission_switch'].state;
   }
 
   set hass(hass) {
     const root = this.shadowRoot;
+    //const config = this._config;
     this.myhass = hass;
 
-    let torrents = this._getTorrents(hass);
+    let { hide_turtle, hide_startstop, show_type } = this._config;
+    let torrents = this._getTorrents(hass, this._ttype);
     let gattributes = this._getGAttributes(hass);
 
-    this._updateTitle(root.getElementById('title'), gattributes);
+    this._updateTitle(root.getElementById('title'), gattributes, hide_turtle, hide_startstop, show_type);
     this._updateContent(root.getElementById('attributes'), torrents);
   }
 

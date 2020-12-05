@@ -7,20 +7,38 @@
 
 This Lovelace custom card displays torrents information provided by the Transmission Integration.
 It also supports turtle mode and start/stop of all torrents.
+You can cycle through the different torrent types by clicking on the type label.
 
-#### Installation
+### Installation
+
 The easiest way to install it is through [HACS (Home Assistant Community Store)](https://custom-components.github.io/hacs/),
-search for <i>Transmission</i> in the Frontend section and select Transmission Card.<br />
+search for *Transmission* in the Frontend section and select Transmission Card.<br />
 If you are not using HACS, you may download transmission-card.js and put it into
 homeassistant_config_dir/www/community/transmission-card/ directory.<br />
 
-#### Lovelace UI configuration
+### Lovelace UI configuration
+
 Please add the card to the resources in configuration.yaml:
 
 ```
 resources:
   - {type: js, url: '/hacsfiles/transmission-card/transmission-card.js'}
 ```
+
+### Options
+
+#### Card options
+
+| Name             | Type         | Required     | Default                 | Description                         |
+| ---------------- | ------------ | ------------ | ----------------------- | ----------------------------------- |
+| type             | string       | **required** |                         | `custom:transmission-card`          |
+| no_torrent_label | string       | optional     | `No Torrents`           | label displayed with no torrents    |
+| hide_turtle      | boolean      | optional     | false                   | hide turtle button                  |
+| hide_startstop   | boolean      | optional     | false                   | hide start/stop button              |
+| show_type        | boolean      | optional     | true                    | show type of torrents displayed     |
+| default_type     | string       | optional     | `total`                 | type of torrents to display at start |
+
+Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
 Please find below an example of ui-lovelace.yaml card entry:
 
@@ -29,5 +47,6 @@ Please find below an example of ui-lovelace.yaml card entry:
       - type: custom:transmission-card
 ```
 
-Transmission idle:<br />
+Transmission idle:
+
 ![Transmission idle](https://raw.githubusercontent.com/amaximus/transmission-card/main/transmission_idle.jpg)
