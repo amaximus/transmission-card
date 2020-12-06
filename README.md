@@ -37,16 +37,21 @@ resources:
 | hide_startstop   | boolean      | optional     | false                   | hide start/stop button              |
 | hide_type        | boolean      | optional     | true                    | hide type of torrents displayed     |
 | default_type     | string       | optional     | `total`                 | type of torrents to display at start |
+| display_mode     | string       | optional     | `compact`               | display mode: compact or full        |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
 Please find below an example of ui-lovelace.yaml card entry:
 
-```
+```yaml
     cards:
       - type: custom:transmission-card
 ```
 
-Transmission idle:
+Transmission idle in compact mode:
 
 ![Transmission idle](https://raw.githubusercontent.com/amaximus/transmission-card/main/transmission_idle.jpg)
+
+Transmission downloading in full mode:
+
+![Transmission downloading](https://raw.githubusercontent.com/amaximus/transmission-card/main/transmission_downloading_full_mode.jpg)
