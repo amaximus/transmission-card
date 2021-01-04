@@ -63,7 +63,7 @@ class TransmissionCard extends HTMLElement {
     const root = this.shadowRoot;
     if (root.lastChild) root.removeChild(root.lastChild);
 
-    if (config.display_mode && 
+    if (config.display_mode &&
       !['compact', 'full'].includes(config.display_mode)) {
         throw new Error('display_mode accepts only "compact" and "full" as value');
       }
@@ -90,7 +90,7 @@ class TransmissionCard extends HTMLElement {
     const style = document.createElement('style');
     style.textContent = `
 #attributes {
-  margin-top: 1.4em;
+  margin-top: 0.4em;
   padding-bottom: 0.8em;
 }
 .progressbar {
@@ -151,18 +151,25 @@ class TransmissionCard extends HTMLElement {
   color: var(--paper-item-icon-active-color);
   margin-left: 1em;
 }
-table {
-  margin-top: -20px;
-  border: none;
-  padding-left: 1.3em;
-  padding-right: 1.3em;
-  margin-left: 0em;
-  margin-right: 1em;
-  margin-bottom: -1.3em;
+
+#title {
+  position: relative;
+  display: inline;
+  width: 100%;
 }
+#title1 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.titleitem {
+  width: auto;
+  margin-left: 0.7em;
+}
+
 .status {
   font-size: 1em;
-  margin-left: 0.5em;
 }
 .turtle_off {
   color: var(--light-primary-color);
@@ -184,10 +191,12 @@ table {
   color: var(--text-light-primary-color, var(--primary-text-color));
   border-radius: 0.4em;
   margin-bottom: 0.7em;
+  margin-left: 0.7em;
   height: 1.5em;
   display: flex;
-  padding-left: 1em;
+  padding-left: 1.3em;
   padding-right: 1em;
+  width: auto;
 }
 .torrents {
   margin-left: 1.4em;
@@ -211,10 +220,10 @@ table {
 }
 .torrent_details {
   font-size: 0.7em;
-} 
+}
 `;
     content.innerHTML = `
-      <table id='title'></table>
+      <div id='title'></div>
       <div id='attributes'></div>
     `;
     card.appendChild(style);
@@ -249,7 +258,7 @@ table {
           </div>`).join('')}
         </div>
       `}
-    } 
+    }
     else {
       element.innerHTML = `<div class="no-torrent">${this._config.no_torrent_label}</div>`;
     }
@@ -257,16 +266,16 @@ table {
 
   _updateTitle(element, gattributes, hturtle, hstartstop, htype) {
     element.innerHTML = `
-        <tr>
-           <td><span class="status c-${gattributes.status.replace('/','')}">${gattributes.status}</span></td>
-           <td><ha-icon icon="mdi:download" class="down-color"></td>
-           <td>${gattributes.down_speed} ${gattributes.down_unit}</td>
-           <td><ha-icon icon="mdi:upload" class="up-color"></td>
-           <td>${gattributes.up_speed} ${gattributes.up_unit}</td>
-           <td><ha-icon-button icon="mdi:turtle" title="turtle mode" id="turtle"></ha-icon-button></td>
-           <td><ha-icon-button icon="mdi:stop" title="start/stop all" id="start"></ha-icon-button></td>
-           <td><p id="ttype"></p></td>
-        </tr>
+         <div id="title1">
+           <div class="status titleitem c-${gattributes.status.replace('/','')}"><p class="txtitem">${gattributes.status}</p></div>
+           <div class="titleitem"><ha-icon-button icon="mdi:download" class="down-color"></div>
+           <div class="titleitem"><p class="txtitem">${gattributes.down_speed} ${gattributes.down_unit}</p></div>
+           <div class="titleitem"><ha-icon-button icon="mdi:upload" class="up-color"></div>
+           <div class="titleitem"><p class="txtitem">${gattributes.up_speed} ${gattributes.up_unit}</p></div>
+           <div class="titleitem"><ha-icon-button icon="mdi:turtle" title="turtle mode" id="turtle"></ha-icon-button></div>
+           <div class="titleitem"><ha-icon-button icon="mdi:stop" title="start/stop all" id="start"></ha-icon-button></div>
+           <div><p id="ttype"></p></div>
+         </div>
     `;
 
     const root = this.shadowRoot;

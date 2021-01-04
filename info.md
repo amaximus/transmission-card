@@ -43,9 +43,11 @@ Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`st
 
 Please find below an example of ui-lovelace.yaml card entry:
 
-```
+```yaml
     cards:
       - type: custom:transmission-card
+        hide_type: false
+        default_type: 'active'
 ```
 
 Transmission idle in compact mode:
@@ -55,3 +57,10 @@ Transmission idle in compact mode:
 Transmission downloading in full mode:
 
 ![Transmission downloading](https://raw.githubusercontent.com/amaximus/transmission-card/main/transmission_downloading_full_mode.jpg)
+
+## Thanks
+
+Thanks to all the people who have contributed!
+
+[![contributors](https://contributors-img.web.app/image?repo=amaximus/transmission-card)](https://github.com/amaximus/transmission-card/graphs/contributors)
+
