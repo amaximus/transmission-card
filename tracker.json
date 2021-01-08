@@ -1,8 +1,8 @@
 {
   "transmission-card": {
-    "version": "0.4.2",
-    "updated_at": "2021-01-04",
+    "version": "0.5.0",
+    "updated_at": "2021-01-08",
     "visit_repo": "https://github.com/amaximus/transmission-card",
-    "changelog": "https://github.com/amaximus/transmission-card/releases/0.4.2"
+    "changelog": "https://github.com/amaximus/transmission-card/releases/0.5.0"
   }
 }

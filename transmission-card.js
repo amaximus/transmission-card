@@ -5,10 +5,10 @@ class TransmissionCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  _getTorrents(hass, ttype) {
+  _getTorrents(hass, ttype, sensor_name) {
     var res = [];
-    if (typeof hass.states['sensor.transmission_' + ttype + '_torrents'] != "undefined") {
-      const data1 = hass.states['sensor.transmission_' + ttype + '_torrents'].attributes['torrent_info'];
+    if (typeof hass.states['sensor.' + sensor_name + '_' + ttype + '_torrents'] != "undefined") {
+      const data1 = hass.states['sensor.' + sensor_name + '_' + ttype + '_torrents'].attributes['torrent_info'];
       Object.keys(data1 || {}).forEach(function (key) {
         res.push({
           name: key,
@@ -23,14 +23,14 @@ class TransmissionCard extends HTMLElement {
     return res;
   }
 
-  _getGAttributes(hass) {
-    if (typeof hass.states['sensor.transmission_down_speed'] != "undefined") {
+  _getGAttributes(hass, sensor_name) {
+    if (typeof hass.states['sensor.'+ sensor_name + '_down_speed'] != "undefined") {
       return {
-        down_speed: hass.states['sensor.transmission_down_speed'].state,
-        down_unit: hass.states['sensor.transmission_down_speed'].attributes['unit_of_measurement'],
-        up_speed: hass.states['sensor.transmission_up_speed'].state,
-        up_unit: hass.states['sensor.transmission_up_speed'].attributes['unit_of_measurement'],
-        status: hass.states['sensor.transmission_status'].state
+        down_speed: hass.states['sensor.' + sensor_name + '_down_speed'].state,
+        down_unit: hass.states['sensor.' + sensor_name + '_down_speed'].attributes['unit_of_measurement'],
+        up_speed: hass.states['sensor.' + sensor_name + '_up_speed'].state,
+        up_unit: hass.states['sensor.' + sensor_name + '_up_speed'].attributes['unit_of_measurement'],
+        status: hass.states['sensor.' + sensor_name + '_status'].state
       }
     }
     return {
@@ -75,6 +75,7 @@ class TransmissionCard extends HTMLElement {
       'hide_type': false,
       'default_type': 'total',
       'display_mode': 'compact',
+      'sensor_name': 'transmission',
     }
 
     this._config = {
@@ -318,9 +319,9 @@ class TransmissionCard extends HTMLElement {
     //const config = this._config;
     this.myhass = hass;
 
-    let { hide_turtle, hide_startstop, hide_type } = this._config;
-    let torrents = this._getTorrents(hass, this._ttype);
-    let gattributes = this._getGAttributes(hass);
+    let { hide_turtle, hide_startstop, hide_type, sensor_name } = this._config;
+    let torrents = this._getTorrents(hass, this._ttype, sensor_name);
+    let gattributes = this._getGAttributes(hass, sensor_name);
 
     this._updateTitle(root.getElementById('title'), gattributes, hide_turtle, hide_startstop, hide_type);
     this._updateContent(root.getElementById('attributes'), torrents);

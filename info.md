@@ -37,7 +37,8 @@ resources:
 | hide_startstop   | boolean      | optional     | false                   | hide start/stop button              |
 | hide_type        | boolean      | optional     | true                    | hide type of torrents displayed     |
 | default_type     | string       | optional     | `total`                 | type of torrents to display at start |
-| display_mode     | string       | optional     | `compact`               | display mode: compact or full        |
+| display_mode     | string       | optional     | `compact`               | display mode: compact or full       |
+| sensor_name      | string       | optional     | `transmission`          | name of the sensor                  |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
