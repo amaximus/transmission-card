@@ -116,6 +116,7 @@ class TransmissionCard extends HTMLElement {
   overflow: hidden;
   z-index: 2;
   color: var(--text-light-primary-color, var(--primary-text-color));
+  line-height: 1.4em;
 }
 .percent {
   vertical-align: middle;
@@ -123,6 +124,7 @@ class TransmissionCard extends HTMLElement {
   margin-left: 1.7em;
   margin-right: 0.7em;
   color: var(--text-light-primary-color, var(--primary-text-color));
+  line-height: 1.4em;
 }
 .downloading {
   background-color: var(--paper-item-icon-active-color);
@@ -193,6 +195,7 @@ class TransmissionCard extends HTMLElement {
   margin-bottom: 0.7em;
   margin-left: 0.7em;
   height: 1.5em;
+  line-height: 1.5em;
   display: flex;
   padding-left: 1.3em;
   padding-right: 1em;
@@ -329,3 +332,12 @@ class TransmissionCard extends HTMLElement {
 }
 
 customElements.define('transmission-card', TransmissionCard);
+
+// Puts card into the UI card picker dialog
+(window).customCards = (window).customCards || [];
+(window).customCards.push({
+  type: 'transmission-card',
+  name: 'Transmission Card',
+  preview: true,
+  description: 'This Lovelace custom card displays torrents information provided by the Transmission Integration.',
+});
