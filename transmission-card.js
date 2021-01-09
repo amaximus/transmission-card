@@ -184,7 +184,7 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    const state = this.hass.states['switch.transmission_turtle_mode'].state;
+    const state = this.hass.states[`switch.${this.config.sensor_name}_turtle_mode`].state;
     return html`
       <div class="titleitem">
         <ha-icon-button 
@@ -203,7 +203,7 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    const state = this.hass.states['switch.transmission_switch'].state;
+    const state = this.hass.states[`switch.${this.config.sensor_name}_switch`].state;
     return html`
       <div class="titleitem">
         <ha-icon-button 
