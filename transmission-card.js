@@ -68,7 +68,7 @@ class TransmissionCard extends LitElement {
     };
   }
 
-  _toggleTurtle() { 
+  _toggleTurtle() {
     this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_name}_turtle_mode` });
   }
 
@@ -122,7 +122,7 @@ class TransmissionCard extends LitElement {
           </div>
           <div id="attributes">
           ${torrents.length > 0
-            ? this.config.display_mode === 'compact' 
+            ? this.config.display_mode === 'compact'
               ? html`${torrents.map(torrent => this.renderTorrent(torrent))}`
               : html`
                 <div class="torrents">
@@ -184,14 +184,18 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
+    if (typeof this.hass.states[`switch.${this.config.sensor_name}_turtle_mode`] == "undefined") {
+      return html``;
+    }
+
     const state = this.hass.states[`switch.${this.config.sensor_name}_turtle_mode`].state;
     return html`
       <div class="titleitem">
-        <ha-icon-button 
+        <ha-icon-button
           class="turtle_${state}"
-          icon="mdi:turtle" 
-          @click="${this._toggleTurtle}" 
-          title="turtle mode" 
+          icon="mdi:turtle"
+          @click="${this._toggleTurtle}"
+          title="turtle mode"
           id="turtle">
         </ha-icon-button>
       </div>
@@ -203,14 +207,18 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
+    if (typeof this.hass.states[`switch.${this.config.sensor_name}_switch`] == "undefined") {
+      return html``;
+    }
+
     const state = this.hass.states[`switch.${this.config.sensor_name}_switch`].state;
     return html`
       <div class="titleitem">
-        <ha-icon-button 
+        <ha-icon-button
           class="start_${state}"
-          icon="${state === 'on' ? 'mdi:stop' : 'mdi:play'}" 
-          @click="${this._startStop}" 
-          title="start/stop all" 
+          icon="${state === 'on' ? 'mdi:stop' : 'mdi:play'}"
+          @click="${this._startStop}"
+          title="start/stop all"
           id="start">
         </ha-icon-button>
       </div>
@@ -224,8 +232,8 @@ class TransmissionCard extends LitElement {
 
     return html`
       <div>
-        <p 
-          id="ttype" 
+        <p
+          id="ttype"
           @click="${this._toggleType}">
           ${this.selectedType}
         </p>
@@ -297,7 +305,7 @@ class TransmissionCard extends LitElement {
     .up, .down {
       display: inline-block;
       padding-top: 12px;
-    } 
+    }
     .up-color {
       width: 2em;
       color: var(--light-primary-color);
@@ -307,7 +315,7 @@ class TransmissionCard extends LitElement {
       color: var(--paper-item-icon-active-color);
       margin-left: 1em;
     }
-    
+
     #title {
       position: relative;
       display: inline;
@@ -323,7 +331,7 @@ class TransmissionCard extends LitElement {
       width: auto;
       margin-left: 0.7em;
     }
-    
+
     .status {
       font-size: 1em;
     }
