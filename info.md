@@ -11,7 +11,7 @@ You can cycle through the different torrent types by clicking on the type label.
 
 ### Installation
 
-The easiest way to install it is through [HACS (Home Assistant Community Store)](https://custom-components.github.io/hacs/),
+The easiest way to install it is through [HACS (Home Assistant Community Store)](https://github.com/hacs/frontend),
 search for *Transmission* in the Frontend section and select Transmission Card.<br />
 If you are not using HACS, you may download transmission-card.js and put it into
 homeassistant_config_dir/www/community/transmission-card/ directory.<br />
