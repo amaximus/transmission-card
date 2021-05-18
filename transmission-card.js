@@ -97,7 +97,7 @@ class TransmissionCard extends LitElement {
       'display_mode': 'compact',
       'sensor_name': 'transmission',
       'header_text': 'Transmission',
-      'header': true,
+      'hide_header': false,
     }
 
     this.config = {
@@ -236,7 +236,7 @@ class TransmissionCard extends LitElement {
   }
   
   renderCardHeader1() {
-    if (this.config.header) {
+    if (this.config.hide_header) {
       return html``;
     }
     
@@ -248,7 +248,7 @@ class TransmissionCard extends LitElement {
   }
 
   renderCardHeader2() {
-    if (!this.config.header) {
+    if (!this.config.hide_header) {
       return html``;
     }
     
