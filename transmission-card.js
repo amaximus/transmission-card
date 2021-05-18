@@ -118,7 +118,6 @@ class TransmissionCard extends LitElement {
       <ha-card>
         <div class="card-header">
           ${this.renderCardHeader1()}
-          ${this.renderCardHeader2()}
         </div>
         <div>
           <div id="title">
@@ -236,7 +235,7 @@ class TransmissionCard extends LitElement {
   }
   
   renderCardHeader1() {
-    if (this.config.hide_header == true) {
+    if (this.config.hide_header) {
       return html``;
     }
     
