@@ -39,6 +39,8 @@ resources:
 | default_type     | string       | optional     | `total`                 | type of torrents to display at start |
 | display_mode     | string       | optional     | `compact`               | display mode: compact or full       |
 | sensor_name      | string       | optional     | `transmission`          | name of the sensor                  |
+| hide_header      | boolean      | optional     | false                   | hide header text at the top of card |
+| header_text      | string       | optional     | `Transmission`          | header text at the top of card      |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
