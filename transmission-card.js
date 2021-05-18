@@ -275,6 +275,9 @@ class TransmissionCard extends LitElement {
       margin-left: 1.4em;
       margin-right: 1.4em;
     }
+    .header {
+      display: none;
+    }
     .progressin {
       border-radius: 0.4em;
       height: 100%;
