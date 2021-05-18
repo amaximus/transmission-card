@@ -113,7 +113,7 @@ class TransmissionCard extends LitElement {
 
     const torrents = this._getTorrents(this.hass, this.selectedType, this.config.sensor_name);
     return html`
-      <ha-card header=${this.config.header_text}>
+      <ha-card>
         <div>
           <div id="title">
               ${this.renderTitle()}
