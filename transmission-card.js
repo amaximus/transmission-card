@@ -241,7 +241,7 @@ class TransmissionCard extends LitElement {
     }
     
     return html`
-      <div class="h-name">
+      <div class="v-name">
         ${this.config.header_text}
       </div>
     `;
@@ -253,7 +253,7 @@ class TransmissionCard extends LitElement {
     }
     
     return html`
-      <div class="v-name">
+      <div class="h-name">
         ${this.config.header_text}
       </div>
     `;
