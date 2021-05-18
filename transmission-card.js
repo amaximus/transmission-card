@@ -236,24 +236,24 @@ class TransmissionCard extends LitElement {
   }
   
   renderCardHeader1() {
-    if (this.config.hide_header) {
+    if (this.config.hide_header == true) {
       return html``;
     }
     
     return html`
-      <div class="v-name">
+      <div class="h-name">
         ${this.config.header_text}
       </div>
     `;
   }
 
   renderCardHeader2() {
-    if (!this.config.hide_header) {
+    if (this.config.hide_header == false) {
       return html``;
     }
     
     return html`
-      <div class="h-name">
+      <div class="v-name">
         ${this.config.header_text}
       </div>
     `;
