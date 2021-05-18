@@ -96,6 +96,7 @@ class TransmissionCard extends LitElement {
       'default_type': 'total',
       'display_mode': 'compact',
       'sensor_name': 'transmission',
+      'header_text': 'Transmission',
     }
 
     this.config = {
@@ -130,6 +131,11 @@ class TransmissionCard extends LitElement {
           }
           </div>
         </div>
+        <script>
+          function Geeks() {
+            $("#header").hide();
+        } 
+    </script>
       </ha-card>
     `;
   }
