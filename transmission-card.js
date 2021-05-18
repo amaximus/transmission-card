@@ -306,6 +306,9 @@ class TransmissionCard extends LitElement {
     .downloading {
       background-color: var(--paper-item-icon-active-color);
     }
+    .card-header {
+      display: none;
+    }
     .c-Downloading, .c-UpDown {
       color: var(--paper-item-icon-active-color);
     }
