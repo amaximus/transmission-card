@@ -116,9 +116,7 @@ class TransmissionCard extends LitElement {
     return html`
       <ha-card>
         <div class="card-header">
-          <div class="h-name">
-            ${this.config.header_text}
-          </div>
+          ${this.renderCardHeader()}
         </div>
         <div>
           <div id="title">
@@ -232,6 +230,15 @@ class TransmissionCard extends LitElement {
           id="start">
         </ha-icon-button>
       </div>
+    `;
+  }
+  
+  renderCardHeader() {
+    if (this.config.header) {
+      return html`
+          <div class="h-name">
+            ${this.config.header_text}
+          </div>
     `;
   }
 
