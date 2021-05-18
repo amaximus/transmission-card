@@ -131,11 +131,6 @@ class TransmissionCard extends LitElement {
           }
           </div>
         </div>
-        <script>
-          function Geeks() {
-            $("#header").hide();
-        } 
-    </script>
       </ha-card>
     `;
   }
@@ -280,9 +275,6 @@ class TransmissionCard extends LitElement {
       position: relative;
       margin-left: 1.4em;
       margin-right: 1.4em;
-    }
-    .header {
-      display: none;
     }
     .progressin {
       border-radius: 0.4em;
