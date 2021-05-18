@@ -235,10 +235,13 @@ class TransmissionCard extends LitElement {
   
   renderCardHeader() {
     if (this.config.header) {
-      return html`
-        <div class="h-name">
-          ${this.config.header_text}
-        </div>
+      return html``;
+    }
+    
+    return html`
+      <div class="h-name">
+        ${this.config.header_text}
+      </div>
     `;
   }
 
