@@ -116,7 +116,7 @@ class TransmissionCard extends LitElement {
     return html`
       <ha-card>
         <div class="card-header">
-          <div class="name">
+          <div class="h-name">
             ${this.config.header_text}
           </div>
         </div>
@@ -307,6 +307,9 @@ class TransmissionCard extends LitElement {
       background-color: var(--paper-item-icon-active-color);
     }
     .card-header {
+      display: none;
+    }
+    .h-name {
       display: none;
     }
     .c-Downloading, .c-UpDown {
