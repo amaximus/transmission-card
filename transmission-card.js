@@ -422,7 +422,9 @@ class TransmissionCard extends LitElement {
   }
 }
 
-customElements.define('transmission-card', TransmissionCard);
+if (!customElements.get('transmission-card')) {
+  customElements.define('transmission-card', TransmissionCard);
+}
 
 // Puts card into the UI card picker dialog
 (window).customCards = (window).customCards || [];
