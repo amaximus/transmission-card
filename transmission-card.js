@@ -207,6 +207,7 @@ class TransmissionCard extends LitElement {
           @click="${this._toggleTurtle}"
           title="turtle mode"
           id="turtle">
+          <ha-icon icon="mdi:turtle"></ha-icon>
         </ha-icon-button>
       </div>
     `;
@@ -230,16 +231,18 @@ class TransmissionCard extends LitElement {
           @click="${this._startStop}"
           title="start/stop all"
           id="start">
+          <ha-icon icon="${state === 'on' ? 'mdi:stop' : 'mdi:play'}">
+          </ha-icon>
         </ha-icon-button>
       </div>
     `;
   }
-  
+
   renderCardHeader1() {
     if (this.config.hide_header) {
       return html``;
     }
-    
+
     return html`
       <div class="v-name">
         ${this.config.header_text}
@@ -251,7 +254,7 @@ class TransmissionCard extends LitElement {
     if (!this.config.hide_header) {
       return html``;
     }
-    
+
     return html`
       <div class="h-name">
         ${this.config.header_text}
