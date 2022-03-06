@@ -75,7 +75,7 @@ class TransmissionCard extends LitElement {
   }
 
   _toggleType(ev) {
-    this.selectedType = ev.detail.item.innerText;
+    this.selectedType = ev.target.value;
   }
 
   _startStop() {
@@ -269,20 +269,19 @@ class TransmissionCard extends LitElement {
 
     return html`
       <div class="titleitem">
-        <paper-dropdown-menu-light
+        <ha-select
           class="type-dropdown"
-          no-label-float
+          .label=${this.label}
+          @selected=${this._toggleType}
+          .value=${this.selectedType}
+          fixedMenuPosition
+          naturalMenuWidt
         >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected=${torrent_types.indexOf(this.selectedType)}
-            @iron-select=${this._toggleType}
-          >
-            ${torrent_types.map((type) => {
-              return html` <paper-item>${type}</paper-item> `;
-            })}
-          </paper-listbox>
-        </paper-dropdown-menu-light>
+          ${torrent_types.map(
+             (type) => html`
+               <mwc-list-item .value=${type}>${type}</mwc-list-item>`
+          )}
+        </ha-select>
       </div>
     `;
   }
