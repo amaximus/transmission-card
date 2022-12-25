@@ -32,10 +32,10 @@ class TransmissionCard extends LitElement {
     };
   }
 
-  _getTorrents(hass, type, sensor_name) {
+  _getTorrents(hass, type, sensor_entity_id) {
     var res = [];
-    if (typeof hass.states[`sensor.${sensor_name}_${type}_torrents`] != "undefined") {
-      const data1 = hass.states[`sensor.${sensor_name}_${type}_torrents`].attributes['torrent_info'];
+    if (typeof hass.states[`sensor.${sensor_entity_id}_${type}_torrents`] != "undefined") {
+      const data1 = hass.states[`sensor.${sensor_entity_id}_${type}_torrents`].attributes['torrent_info'];
       Object.keys(data1 || {}).forEach(function (key) {
         res.push({
           name: key,
@@ -51,14 +51,19 @@ class TransmissionCard extends LitElement {
   }
 
   _getGAttributes(hass) {
-    let sensor_name = this.config.sensor_name;
-    if (typeof hass.states[`sensor.${sensor_name}_down_speed`] != "undefined") {
+    let sensor_entity_id = this.config.sensor_entity_id;
+
+    if (typeof this.config.sensor_name != 'undefined') {
+      sensor_entity_id = this.config.sensor_name;
+    }
+
+    if (typeof hass.states[`sensor.${sensor_entity_id}_down_speed`] != "undefined") {
       return {
-        down_speed: hass.states[`sensor.${sensor_name}_down_speed`].state,
-        down_unit: hass.states[`sensor.${sensor_name}_down_speed`].attributes['unit_of_measurement'],
-        up_speed: hass.states[`sensor.${sensor_name}_up_speed`].state,
-        up_unit: hass.states[`sensor.${sensor_name}_up_speed`].attributes['unit_of_measurement'],
-        status: hass.states[`sensor.${sensor_name}_status`].state
+        down_speed: hass.states[`sensor.${sensor_entity_id}_down_speed`].state,
+        down_unit: hass.states[`sensor.${sensor_entity_id}_down_speed`].attributes['unit_of_measurement'],
+        up_speed: hass.states[`sensor.${sensor_entity_id}_up_speed`].state,
+        up_unit: hass.states[`sensor.${sensor_entity_id}_up_speed`].attributes['unit_of_measurement'],
+        status: hass.states[`sensor.${sensor_entity_id}_status`].state
       }
     }
     return {
@@ -71,7 +76,7 @@ class TransmissionCard extends LitElement {
   }
 
   _toggleTurtle() {
-    this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_name}_turtle_mode` });
+    this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_entity_id}_turtle_mode` });
   }
 
   _toggleType(ev) {
@@ -79,7 +84,7 @@ class TransmissionCard extends LitElement {
   }
 
   _startStop() {
-    this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_name}_switch` });
+    this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_entity_id}_switch` });
   }
 
   setConfig(config) {
@@ -96,6 +101,7 @@ class TransmissionCard extends LitElement {
       'default_type': 'total',
       'display_mode': 'compact',
       'sensor_name': 'transmission',
+      'sensor_entity_id': 'transmission',
       'header_text': 'Transmission',
       'hide_header': false,
     }
@@ -113,7 +119,7 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    const torrents = this._getTorrents(this.hass, this.selectedType, this.config.sensor_name);
+    const torrents = this._getTorrents(this.hass, this.selectedType, this.config.sensor_entity_id);
     return html`
       <ha-card>
         <div class="card-header">
@@ -194,11 +200,11 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    if (typeof this.hass.states[`switch.${this.config.sensor_name}_turtle_mode`] == "undefined") {
+    if (typeof this.hass.states[`switch.${this.config.sensor_entity_id}_turtle_mode`] == "undefined") {
       return html``;
     }
 
-    const state = this.hass.states[`switch.${this.config.sensor_name}_turtle_mode`].state;
+    const state = this.hass.states[`switch.${this.config.sensor_entity_id}_turtle_mode`].state;
     return html`
       <div class="titleitem">
         <ha-icon-button
@@ -218,11 +224,11 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    if (typeof this.hass.states[`switch.${this.config.sensor_name}_switch`] == "undefined") {
+    if (typeof this.hass.states[`switch.${this.config.sensor_entity_id}_switch`] == "undefined") {
       return html``;
     }
 
-    const state = this.hass.states[`switch.${this.config.sensor_name}_switch`].state;
+    const state = this.hass.states[`switch.${this.config.sensor_entity_id}_switch`].state;
     return html`
       <div class="titleitem">
         <ha-icon-button

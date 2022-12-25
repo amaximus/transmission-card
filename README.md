@@ -38,7 +38,8 @@ resources:
 | hide_type        | boolean      | optional     | true                    | hide type of torrents displayed     |
 | default_type     | string       | optional     | `total`                 | type of torrents to display at start |
 | display_mode     | string       | optional     | `compact`               | display mode: compact or full       |
-| sensor_name      | string       | optional     | `transmission`          | name of the sensor                  |
+| sensor_name      | string       | optional     | `transmission`          | DEPRECATED. Name of the sensor. Use sensor_entity_id instead. It will be removed in a later release. |
+| sensor_entity_id | string       | optional     | `transmission`          | name of the sensor                  |
 | hide_header      | boolean      | optional     | false                   | hide header text at the top of card |
 | header_text      | string       | optional     | `Transmission`          | header text at the top of card      |
 
@@ -66,4 +67,3 @@ Transmission downloading in full mode:
 Thanks to all the people who have contributed!
 
 [![contributors](https://contributors-img.web.app/image?repo=amaximus/transmission-card)](https://github.com/amaximus/transmission-card/graphs/contributors)
-
