@@ -147,8 +147,7 @@ class TransmissionCard extends LitElement {
     return html`
       <ha-card>
         <div class="card-header">
-          ${this.renderCardHeader1()}
-          ${this.renderCardHeader2()}
+          ${this.renderCardHeader()}
         </div>
         <div>
           <div id="addTorrent">
@@ -315,25 +314,12 @@ class TransmissionCard extends LitElement {
     `;
   }
 
-  renderCardHeader1() {
+  renderCardHeader() {
     if (this.config.hide_header) {
       return html``;
     }
-
     return html`
-      <div class="v-name">
-        ${this.config.header_text}
-      </div>
-    `;
-  }
-
-  renderCardHeader2() {
-    if (!this.config.hide_header) {
-      return html``;
-    }
-
-    return html`
-      <div class="h-name">
+      <div>
         ${this.config.header_text}
       </div>
     `;
@@ -352,7 +338,7 @@ class TransmissionCard extends LitElement {
           @selected=${this._toggleType}
           .value=${this.selectedType}
           fixedMenuPosition
-          naturalMenuWidt
+          naturalMenuWidth
         >
           ${torrent_types.map(
              (type) => html`
@@ -409,9 +395,6 @@ class TransmissionCard extends LitElement {
     .downloading {
       background-color: var(--accent-color);
     }
-    .h-name {
-      display: none;
-    }
     .c-Downloading, .c-UpDown {
       color: var(--accent-color);
     }
@@ -448,6 +431,7 @@ class TransmissionCard extends LitElement {
       flex-wrap: wrap;
       justify-content: center;
       width: 100%;
+      line-height: 2.5rem;
     }
     #addTorrent{
       display: flex;
