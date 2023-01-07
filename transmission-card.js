@@ -381,13 +381,13 @@ class TransmissionCard extends LitElement {
       line-height: 1.4em;
     }
     .downloading {
-      background-color: var(--paper-item-icon-active-color);
+      background-color: var(--accent-color);
     }
     .h-name {
       display: none;
     }
     .c-Downloading, .c-UpDown {
-      color: var(--paper-item-icon-active-color);
+      color: var(--accent-color);
     }
     .seeding {
       background-color: var(--light-primary-color);
@@ -409,7 +409,7 @@ class TransmissionCard extends LitElement {
       color: var(--light-primary-color);
     }
     .down-color {
-      color: var(--paper-item-icon-active-color);
+      color: var(--accent-color);
     }
 
     #title {
@@ -434,7 +434,7 @@ class TransmissionCard extends LitElement {
       color: var(--light-primary-color);
     }
     .turtle_on {
-      color: var(--paper-item-icon-active-color);
+      color: var(--accent-color);
     }
     .start_on {
       color: var(--light-primary-color);
