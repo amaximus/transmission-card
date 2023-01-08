@@ -87,6 +87,23 @@ class TransmissionCard extends LitElement {
     this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_entity_id}_switch` });
   }
 
+  _startTorrent(event) {
+    const torrentId = event.currentTarget.dataset.torrentId; 
+    this.hass.callService('transmission', 'start_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
+  }
+
+  _stopTorrent(event) {
+    const torrentId = event.currentTarget.dataset.torrentId;
+    this.hass.callService('transmission', 'stop_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
+  }
+
+  _getConfigEntry() {
+    const entityRegistry = this.hass.connection._entityRegistry.state.find( x => x.entity_id = 'sensor.transmission_status' && x.platform === 'transmission')
+    if (entityRegistry) {
+      return entityRegistry.config_entry_id;
+    }
+  }
+
   setConfig(config) {
     if (config.display_mode &&
       !['compact', 'full'].includes(config.display_mode)) {
@@ -103,7 +120,7 @@ class TransmissionCard extends LitElement {
       'sensor_name': 'transmission',
       'sensor_entity_id': 'transmission',
       'header_text': 'Transmission',
-      'hide_header': false,
+      'hide_header': false
     }
 
     this.config = {
@@ -191,8 +208,34 @@ class TransmissionCard extends LitElement {
         </div>
       </div>
       <div class="torrent_details">${torrent.percent} %</div>
+      ${this.renderTorrentButton(torrent)}
     </div>
     `
+  }
+
+  renderTorrentButton(torrent) {
+    if (!this._getConfigEntry()) {
+      return html``;
+    }
+    const activeTorrentStatus = ['seeding', 'downloading']
+    const isActive = activeTorrentStatus.includes(torrent.state);
+    const label = isActive ? 'Stop' : 'Start';
+    const icon = isActive ? 'mdi:stop' : 'mdi:play';
+
+    return html`
+    <div class="torrent-buttons"> 
+      <ha-icon-button
+        class="start_${torrent.state}"
+        data-torrent-id=${torrent.id}
+        @click="${isActive ? this._stopTorrent : this._startTorrent}"
+        title="${label}"
+        aria-label="${label}"
+        >
+          <ha-icon 
+            icon="${icon}">
+          </ha-icon>
+      </ha-icon-button>
+    </div>`
   }
 
   renderTurtleButton() {
@@ -229,15 +272,17 @@ class TransmissionCard extends LitElement {
     }
 
     const state = this.hass.states[`switch.${this.config.sensor_entity_id}_switch`].state;
+    const isOn = state === 'on';
+    const icon = isOn ? 'mdi:stop' : 'mdi:play';
+    const title = isOn ? 'Stop All' : 'Play All';
     return html`
       <div class="titleitem">
         <ha-icon-button
           class="start_${state}"
-          icon="${state === 'on' ? 'mdi:stop' : 'mdi:play'}"
           @click="${this._startStop}"
-          title="start/stop all"
+          title="${title}"
           id="start">
-          <ha-icon icon="${state === 'on' ? 'mdi:stop' : 'mdi:play'}">
+          <ha-icon icon="${icon}">
           </ha-icon>
         </ha-icon-button>
       </div>
@@ -336,13 +381,13 @@ class TransmissionCard extends LitElement {
       line-height: 1.4em;
     }
     .downloading {
-      background-color: var(--paper-item-icon-active-color);
+      background-color: var(--accent-color);
     }
     .h-name {
       display: none;
     }
     .c-Downloading, .c-UpDown {
-      color: var(--paper-item-icon-active-color);
+      color: var(--accent-color);
     }
     .seeding {
       background-color: var(--light-primary-color);
@@ -364,7 +409,7 @@ class TransmissionCard extends LitElement {
       color: var(--light-primary-color);
     }
     .down-color {
-      color: var(--paper-item-icon-active-color);
+      color: var(--accent-color);
     }
 
     #title {
@@ -389,7 +434,7 @@ class TransmissionCard extends LitElement {
       color: var(--light-primary-color);
     }
     .turtle_on {
-      color: var(--paper-item-icon-active-color);
+      color: var(--accent-color);
     }
     .start_on {
       color: var(--light-primary-color);
@@ -414,17 +459,33 @@ class TransmissionCard extends LitElement {
       margin: 0 0 0 0;
       height: 4px;
     }
+    .torrent {
+      display: grid;
+      grid-template-areas:
+      "name     name" 
+      "state    button" 
+      "progress button" 
+      "details  button";
+      grid-template-columns: 1fr auto;
+      grid-column-gap: 1em;
+    }
     .torrent_name {
+      grid-area: name;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
     .torrent_state {
+      grid-area: state;
       font-size: 0.7em;
       text-transform: capitalize;
     }
     .torrent_details {
+      grid-area: details;
       font-size: 0.7em;
+    }
+    .torrent-buttons {
+      grid-area: button;
     }
     `;
   }
