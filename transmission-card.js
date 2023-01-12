@@ -97,6 +97,13 @@ class TransmissionCard extends LitElement {
     this.hass.callService('transmission', 'stop_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
   }
 
+  _addTorrent(event) {
+    if (event.key !== 'Enter') return;	
+    const torrentMagnet = event.target.value;
+    this.hass.callService('transmission', 'add_torrent', { entry_id: `${this._getConfigEntry()}`, torrent: torrentMagnet });
+    event.target.value = '';
+  }
+
   _getConfigEntry() {
     const entityRegistry = this.hass.connection._entityRegistry.state.find( x => x.entity_id = 'sensor.transmission_status' && x.platform === 'transmission')
     if (entityRegistry) {
@@ -143,6 +150,11 @@ class TransmissionCard extends LitElement {
           ${this.renderCardHeader1()}
           ${this.renderCardHeader2()}
         </div>
+		<div>
+          <div id="addTorrent">
+              ${this.renderAddTorrent()}
+          </div>
+		</div>
         <div>
           <div id="title">
               ${this.renderTitle()}
@@ -183,6 +195,20 @@ class TransmissionCard extends LitElement {
         ${this.renderStartStopButton()}
         ${this.renderTypeSelect()}
       </div>
+    `;
+  }
+
+  renderAddTorrent() {
+    return html
+    `
+      <ha-textfield placeholder="Input your magnet link" id="addTorrent" @keypress="${this._addTorrent}">
+        <label class="mdc-text-field mdc-text-field--filled mdc-text-field--label-floating">
+          <span class="mdc-text-field__ripple"></span>
+          <span id="label" class="mdc-floating-label mdc-floating-label--float-above"Torrent link</span>
+          <input class="mdc-text-field__input" aria-labelledby="label" type="text" placeholder="Input your magnet link" pattern="/(a-zA-z)+:\S+">
+          <span class="mdc-line-ripple"></span>
+        </label>
+      </ha-textfield>
     `;
   }
 
@@ -423,6 +449,11 @@ class TransmissionCard extends LitElement {
       justify-content: center;
       width: 100%;
     }
+	 #addTorrent{
+		display: flex;
+		width: 90%;
+		margin: 0 auto;	 
+	 }
     .titleitem {
       width: auto;
       margin-left: 0.7em;
