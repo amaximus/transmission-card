@@ -150,11 +150,11 @@ class TransmissionCard extends LitElement {
           ${this.renderCardHeader1()}
           ${this.renderCardHeader2()}
         </div>
-		<div>
+        <div>
           <div id="addTorrent">
               ${this.renderAddTorrent()}
           </div>
-		</div>
+        </div>
         <div>
           <div id="title">
               ${this.renderTitle()}
@@ -449,11 +449,11 @@ class TransmissionCard extends LitElement {
       justify-content: center;
       width: 100%;
     }
-	 #addTorrent{
-		display: flex;
-		width: 90%;
-		margin: 0 auto;	 
-	 }
+    #addTorrent{
+      display: flex;
+      width: 90%;
+      margin: 0 auto;	 
+    }
     .titleitem {
       width: auto;
       margin-left: 0.7em;
