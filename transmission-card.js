@@ -278,7 +278,6 @@ class TransmissionCard extends LitElement {
       <div class="titleitem">
         <ha-icon-button
           class="turtle_${state}"
-          icon="mdi:turtle"
           @click="${this._toggleTurtle}"
           title="turtle mode"
           id="turtle">
@@ -342,8 +341,8 @@ class TransmissionCard extends LitElement {
           naturalMenuWidth
         >
           ${torrent_types.map(
-             (type) => html`
-               <mwc-list-item .value=${type}>${type}</mwc-list-item>`
+            (type) => html`
+              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
           )}
         </ha-select>
       </div>
