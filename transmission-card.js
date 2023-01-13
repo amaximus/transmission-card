@@ -127,7 +127,8 @@ class TransmissionCard extends LitElement {
       'sensor_name': 'transmission',
       'sensor_entity_id': 'transmission',
       'header_text': 'Transmission',
-      'hide_header': false
+      'hide_header': false,
+      'hide_add_torrent': false
     }
 
     this.config = {
@@ -149,11 +150,7 @@ class TransmissionCard extends LitElement {
         <div class="card-header">
           ${this.renderCardHeader()}
         </div>
-        <div>
-          <div id="addTorrent">
-              ${this.renderAddTorrent()}
-          </div>
-        </div>
+        ${this.renderAddTorrent()}
         <div>
           <div id="title">
               ${this.renderTitle()}
@@ -198,17 +195,21 @@ class TransmissionCard extends LitElement {
   }
 
   renderAddTorrent() {
+    if (this.config.hide_add_torrent) {
+      return html``;
+    }
+
     return html
     `
-      <ha-textfield placeholder="Input your magnet link" id="addTorrent" @keypress="${this._addTorrent}">
-        <label class="mdc-text-field mdc-text-field--filled mdc-text-field--label-floating">
-          <span class="mdc-text-field__ripple"></span>
-          <span id="label" class="mdc-floating-label mdc-floating-label--float-above"Torrent link</span>
-          <input class="mdc-text-field__input" aria-labelledby="label" type="text" placeholder="Input your magnet link" pattern="/(a-zA-z)+:\S+">
-          <span class="mdc-line-ripple"></span>
-        </label>
-      </ha-textfield>
-    `;
+      <div id="addTorrent">
+        <ha-textfield 
+          placeholder="Your magnet link" 
+          name="addTorrent" 
+          @keypress="${this._addTorrent}" 
+          label="Torrent link">
+        </ha-textfield>
+      </div>
+    `
   }
 
   renderTorrent(torrent) {
@@ -433,10 +434,13 @@ class TransmissionCard extends LitElement {
       width: 100%;
       line-height: 2.5rem;
     }
-    #addTorrent{
-      display: flex;
-      width: 90%;
-      margin: 0 auto;	 
+    #addTorrent {
+      margin-left: 1.4em;
+      margin-right: 1.4em;
+      margin-bottom: 1rem;
+    }
+    #addTorrent ha-textfield{
+      width: 100%;
     }
     .titleitem {
       width: auto;
