@@ -28,7 +28,7 @@ class TransmissionCard extends LitElement {
     return {
       config: {},
       hass: {},
-      selectedType: undefined
+      selectedType: {state: true}
     };
   }
 
