@@ -28,7 +28,7 @@ class TransmissionCard extends LitElement {
     return {
       config: {},
       hass: {},
-      selectedType: undefined
+      selectedType: {state: true}
     };
   }
 
@@ -127,7 +127,8 @@ class TransmissionCard extends LitElement {
       'sensor_name': 'transmission',
       'sensor_entity_id': 'transmission',
       'header_text': 'Transmission',
-      'hide_header': false
+      'hide_header': false,
+      'hide_add_torrent': false
     }
 
     this.config = {
@@ -147,14 +148,9 @@ class TransmissionCard extends LitElement {
     return html`
       <ha-card>
         <div class="card-header">
-          ${this.renderCardHeader1()}
-          ${this.renderCardHeader2()}
+          ${this.renderCardHeader()}
         </div>
-        <div>
-          <div id="addTorrent">
-              ${this.renderAddTorrent()}
-          </div>
-        </div>
+        ${this.renderAddTorrent()}
         <div>
           <div id="title">
               ${this.renderTitle()}
@@ -199,17 +195,21 @@ class TransmissionCard extends LitElement {
   }
 
   renderAddTorrent() {
+    if (this.config.hide_add_torrent) {
+      return html``;
+    }
+
     return html
     `
-      <ha-textfield placeholder="Input your magnet link" id="addTorrent" @keypress="${this._addTorrent}">
-        <label class="mdc-text-field mdc-text-field--filled mdc-text-field--label-floating">
-          <span class="mdc-text-field__ripple"></span>
-          <span id="label" class="mdc-floating-label mdc-floating-label--float-above"Torrent link</span>
-          <input class="mdc-text-field__input" aria-labelledby="label" type="text" placeholder="Input your magnet link" pattern="/(a-zA-z)+:\S+">
-          <span class="mdc-line-ripple"></span>
-        </label>
-      </ha-textfield>
-    `;
+      <div id="addTorrent">
+        <ha-textfield 
+          placeholder="Your magnet link" 
+          name="addTorrent" 
+          @keypress="${this._addTorrent}" 
+          label="Torrent link">
+        </ha-textfield>
+      </div>
+    `
   }
 
   renderTorrent(torrent) {
@@ -278,7 +278,6 @@ class TransmissionCard extends LitElement {
       <div class="titleitem">
         <ha-icon-button
           class="turtle_${state}"
-          icon="mdi:turtle"
           @click="${this._toggleTurtle}"
           title="turtle mode"
           id="turtle">
@@ -315,25 +314,12 @@ class TransmissionCard extends LitElement {
     `;
   }
 
-  renderCardHeader1() {
+  renderCardHeader() {
     if (this.config.hide_header) {
       return html``;
     }
-
     return html`
-      <div class="v-name">
-        ${this.config.header_text}
-      </div>
-    `;
-  }
-
-  renderCardHeader2() {
-    if (!this.config.hide_header) {
-      return html``;
-    }
-
-    return html`
-      <div class="h-name">
+      <div>
         ${this.config.header_text}
       </div>
     `;
@@ -352,11 +338,11 @@ class TransmissionCard extends LitElement {
           @selected=${this._toggleType}
           .value=${this.selectedType}
           fixedMenuPosition
-          naturalMenuWidt
+          naturalMenuWidth
         >
           ${torrent_types.map(
-             (type) => html`
-               <mwc-list-item .value=${type}>${type}</mwc-list-item>`
+            (type) => html`
+              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
           )}
         </ha-select>
       </div>
@@ -409,9 +395,6 @@ class TransmissionCard extends LitElement {
     .downloading {
       background-color: var(--accent-color);
     }
-    .h-name {
-      display: none;
-    }
     .c-Downloading, .c-UpDown {
       color: var(--accent-color);
     }
@@ -448,11 +431,15 @@ class TransmissionCard extends LitElement {
       flex-wrap: wrap;
       justify-content: center;
       width: 100%;
+      line-height: 2.5rem;
     }
-    #addTorrent{
-      display: flex;
-      width: 90%;
-      margin: 0 auto;	 
+    #addTorrent {
+      margin-left: 1.4em;
+      margin-right: 1.4em;
+      margin-bottom: 1rem;
+    }
+    #addTorrent ha-textfield{
+      width: 100%;
     }
     .titleitem {
       width: auto;
