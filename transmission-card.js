@@ -34,8 +34,8 @@ class TransmissionCard extends LitElement {
 
   _getTorrents(hass, type, sensor_entity_id) {
     var res = [];
-    if (typeof hass.states[`sensor.${sensor_entity_id}_${type}_torrents`] != "undefined") {
-      const data1 = hass.states[`sensor.${sensor_entity_id}_${type}_torrents`].attributes['torrent_info'];
+    if (typeof this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`] != "undefined") {
+      const data1 = this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`].attributes['torrent_info'];
       Object.keys(data1 || {}).forEach(function (key) {
         res.push({
           name: key,
@@ -53,17 +53,13 @@ class TransmissionCard extends LitElement {
   _getGAttributes(hass) {
     let sensor_entity_id = this.config.sensor_entity_id;
 
-    if (typeof this.config.sensor_name != 'undefined') {
-      sensor_entity_id = this.config.sensor_name;
-    }
-
-    if (typeof hass.states[`sensor.${sensor_entity_id}_down_speed`] != "undefined") {
+    if (typeof this.hass.states[`sensor.${sensor_entity_id}_down_speed`] != "undefined") {
       return {
-        down_speed: hass.states[`sensor.${sensor_entity_id}_down_speed`].state,
-        down_unit: hass.states[`sensor.${sensor_entity_id}_down_speed`].attributes['unit_of_measurement'],
-        up_speed: hass.states[`sensor.${sensor_entity_id}_up_speed`].state,
-        up_unit: hass.states[`sensor.${sensor_entity_id}_up_speed`].attributes['unit_of_measurement'],
-        status: hass.states[`sensor.${sensor_entity_id}_status`].state
+        down_speed: this.hass.states[`sensor.${sensor_entity_id}_down_speed`].state,
+        down_unit: this.hass.states[`sensor.${sensor_entity_id}_down_speed`].attributes['unit_of_measurement'],
+        up_speed: this.hass.states[`sensor.${sensor_entity_id}_up_speed`].state,
+        up_unit: this.hass.states[`sensor.${sensor_entity_id}_up_speed`].attributes['unit_of_measurement'],
+        status: this.hass.states[`sensor.${sensor_entity_id}_status`].state
       }
     }
     return {
@@ -88,7 +84,7 @@ class TransmissionCard extends LitElement {
   }
 
   _startTorrent(event) {
-    const torrentId = event.currentTarget.dataset.torrentId; 
+    const torrentId = event.currentTarget.dataset.torrentId;
     this.hass.callService('transmission', 'start_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
   }
 
@@ -98,7 +94,7 @@ class TransmissionCard extends LitElement {
   }
 
   _addTorrent(event) {
-    if (event.key !== 'Enter') return;	
+    if (event.key !== 'Enter') return;
     const torrentMagnet = event.target.value;
     this.hass.callService('transmission', 'add_torrent', { entry_id: `${this._getConfigEntry()}`, torrent: torrentMagnet });
     event.target.value = '';
@@ -202,10 +198,10 @@ class TransmissionCard extends LitElement {
     return html
     `
       <div id="addTorrent">
-        <ha-textfield 
-          placeholder="Your magnet link" 
-          name="addTorrent" 
-          @keypress="${this._addTorrent}" 
+        <ha-textfield
+          placeholder="Your magnet link"
+          name="addTorrent"
+          @keypress="${this._addTorrent}"
           label="Torrent link">
         </ha-textfield>
       </div>
@@ -249,7 +245,7 @@ class TransmissionCard extends LitElement {
     const icon = isActive ? 'mdi:stop' : 'mdi:play';
 
     return html`
-    <div class="torrent-buttons"> 
+    <div class="torrent-buttons">
       <ha-icon-button
         class="start_${torrent.state}"
         data-torrent-id=${torrent.id}
@@ -257,7 +253,7 @@ class TransmissionCard extends LitElement {
         title="${label}"
         aria-label="${label}"
         >
-          <ha-icon 
+          <ha-icon
             icon="${icon}">
           </ha-icon>
       </ha-icon-button>
@@ -480,9 +476,9 @@ class TransmissionCard extends LitElement {
     .torrent {
       display: grid;
       grid-template-areas:
-      "name     name" 
-      "state    button" 
-      "progress button" 
+      "name     name"
+      "state    button"
+      "progress button"
       "details  button";
       grid-template-columns: 1fr auto;
       grid-column-gap: 1em;
