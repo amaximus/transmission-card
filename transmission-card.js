@@ -101,9 +101,9 @@ class TransmissionCard extends LitElement {
   }
 
   _getConfigEntry() {
-    const entityRegistry = this.hass.connection._entityRegistry.state.find( x => x.entity_id = 'sensor.transmission_status' && x.platform === 'transmission')
+    const entityRegistry = this.hass.connection._entityRegistryDisplay.state.entities.find(x => x.ei = 'sensor.transmission_status' && x.pl === 'transmission')
     if (entityRegistry) {
-      return entityRegistry.config_entry_id;
+      return this.hass.devices[entityRegistry.di].config_entries[0];
     }
   }
 
