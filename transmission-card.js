@@ -55,9 +55,9 @@ class TransmissionCard extends LitElement {
 
     if (typeof this.hass.states[`sensor.${sensor_entity_id}_down_speed`] != "undefined") {
       return {
-        down_speed: this.hass.states[`sensor.${sensor_entity_id}_down_speed`].state,
+        down_speed: Math.round(this.hass.states[`sensor.${sensor_entity_id}_down_speed`].state * 10) / 10,
         down_unit: this.hass.states[`sensor.${sensor_entity_id}_down_speed`].attributes['unit_of_measurement'],
-        up_speed: this.hass.states[`sensor.${sensor_entity_id}_up_speed`].state,
+        up_speed: Math.round(this.hass.states[`sensor.${sensor_entity_id}_up_speed`].state * 10) / 10,
         up_unit: this.hass.states[`sensor.${sensor_entity_id}_up_speed`].attributes['unit_of_measurement'],
         status: this.hass.states[`sensor.${sensor_entity_id}_status`].state
       }
