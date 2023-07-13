@@ -55,9 +55,9 @@ class TransmissionCard extends LitElement {
 
     if (typeof this.hass.states[`sensor.${sensor_entity_id}_down_speed`] != "undefined") {
       return {
-        down_speed: Math.round(this.hass.states[`sensor.${sensor_entity_id}_down_speed`].state * 10) / 10,
+        down_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_down_speed`),
         down_unit: this.hass.states[`sensor.${sensor_entity_id}_down_speed`].attributes['unit_of_measurement'],
-        up_speed: Math.round(this.hass.states[`sensor.${sensor_entity_id}_up_speed`].state * 10) / 10,
+        up_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_up_speed`),
         up_unit: this.hass.states[`sensor.${sensor_entity_id}_up_speed`].attributes['unit_of_measurement'],
         status: this.hass.states[`sensor.${sensor_entity_id}_status`].state
       }
@@ -69,6 +69,20 @@ class TransmissionCard extends LitElement {
       up_unit: "MB/s",
       status: "no sensor"
     };
+  }
+
+  _formatSpeed(hass, speedSensor) {
+    const precision = this.hass.entities[speedSensor].display_precision;
+    if (Intl) {
+      return Intl.NumberFormat(
+        hass.locale.language, 
+        { 
+          minimumFractionDigits: precision,
+          maximumFractionDigits: precision
+        }).format(this.hass.states[speedSensor].state);
+    }
+
+    return parseFloat(this.hass.states[speedSensor].state).toFixed(precision);
   }
 
   _toggleTurtle() {
