@@ -109,7 +109,8 @@ class TransmissionCard extends LitElement {
 
   _deleteTorrent(event) {
     const torrentId = event.currentTarget.dataset.torrentId;
-    this.hass.callService('transmission', 'remove_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
+    const deleteData = event.currentTarget.dataset.deleteData;
+    this.hass.callService('transmission', 'remove_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId, delete_data: deleteData });
   }
 
   _addTorrent(event) {
@@ -144,7 +145,8 @@ class TransmissionCard extends LitElement {
       'header_text': 'Transmission',
       'hide_header': false,
       'hide_add_torrent': false,
-      'hide_delete_torrent': false
+      'hide_delete_torrent': false,
+      'hide_delete_torrent_full': false,
     }
 
     this.config = {
@@ -252,7 +254,8 @@ class TransmissionCard extends LitElement {
       <div class="torrent_details">${torrent.percent} %</div>
       <div class="torrent-buttons">
         ${this.renderTorrentButton(torrent)}
-        ${this.renderTorrentDeleteButton(torrent)}
+        ${this.renderTorrentDeleteButton(torrent, false)}
+        ${this.renderTorrentDeleteButton(torrent, true)}
       </div>
     </div>
     `
@@ -281,22 +284,26 @@ class TransmissionCard extends LitElement {
       </ha-icon-button>`
   }
 
-  renderTorrentDeleteButton(torrent) {
+  renderTorrentDeleteButton(torrent, deleteData) {
     if (!this._getConfigEntry()) {
       return html``;
     }
 
-    if (this.config.hide_delete_torrent) {
+    if (
+      this.config.hide_delete_torrent && !deleteData
+      || this.config.hide_delete_torrent_full && deleteData
+    ) {
       return html``;
     }
     
-    const label = 'Delete';
-    const icon = 'mdi:delete';
+    const label = deleteData ? 'Delete with data' : 'Delete';
+    const icon = deleteData ? 'mdi:delete' : 'mdi:close';
 
     return html`
       <ha-icon-button
         class="start_${torrent.state}"
         data-torrent-id=${torrent.id}
+        data-delete-data=${deleteData}
         @click="${this._deleteTorrent}"
         title="${label}"
         aria-label="${label}"
