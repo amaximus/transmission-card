@@ -107,6 +107,11 @@ class TransmissionCard extends LitElement {
     this.hass.callService('transmission', 'stop_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
   }
 
+  _deleteTorrent(event) {
+    const torrentId = event.currentTarget.dataset.torrentId;
+    this.hass.callService('transmission', 'remove_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
+  }
+
   _addTorrent(event) {
     if (event.key !== 'Enter') return;
     const torrentMagnet = event.target.value;
@@ -244,7 +249,10 @@ class TransmissionCard extends LitElement {
         </div>
       </div>
       <div class="torrent_details">${torrent.percent} %</div>
-      ${this.renderTorrentButton(torrent)}
+      <div class="torrent-buttons">
+        ${this.renderTorrentButton(torrent)}
+        ${this.renderTorrentDeleteButton(torrent)}
+      </div>
     </div>
     `
   }
@@ -259,7 +267,6 @@ class TransmissionCard extends LitElement {
     const icon = isActive ? 'mdi:stop' : 'mdi:play';
 
     return html`
-    <div class="torrent-buttons">
       <ha-icon-button
         class="start_${torrent.state}"
         data-torrent-id=${torrent.id}
@@ -270,8 +277,28 @@ class TransmissionCard extends LitElement {
           <ha-icon
             icon="${icon}">
           </ha-icon>
-      </ha-icon-button>
-    </div>`
+      </ha-icon-button>`
+  }
+
+  renderTorrentDeleteButton(torrent) {
+    if (!this._getConfigEntry()) {
+      return html``;
+    }
+    const label = 'Delete';
+    const icon = 'mdi:delete';
+
+    return html`
+      <ha-icon-button
+        class="start_${torrent.state}"
+        data-torrent-id=${torrent.id}
+        @click="${this._deleteTorrent}"
+        title="${label}"
+        aria-label="${label}"
+        >
+          <ha-icon
+            icon="${icon}">
+          </ha-icon>
+      </ha-icon-button>`
   }
 
   renderTurtleButton() {
