@@ -143,7 +143,8 @@ class TransmissionCard extends LitElement {
       'sensor_entity_id': 'transmission',
       'header_text': 'Transmission',
       'hide_header': false,
-      'hide_add_torrent': false
+      'hide_add_torrent': false,
+      'hide_delete_torrent': false
     }
 
     this.config = {
@@ -284,6 +285,11 @@ class TransmissionCard extends LitElement {
     if (!this._getConfigEntry()) {
       return html``;
     }
+
+    if (this.config.hide_delete_torrent) {
+      return html``;
+    }
+    
     const label = 'Delete';
     const icon = 'mdi:delete';
 
