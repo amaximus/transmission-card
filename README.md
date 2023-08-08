@@ -29,20 +29,21 @@ resources:
 
 #### Card options
 
-| Name             | Type         | Required     | Default                 | Description                          |
-| ---------------- | ------------ | ------------ | ----------------------- | ------------------------------------ |
-| type             | string       | **required** |                         | `custom:transmission-card`           |
-| no_torrent_label | string       | optional     | `No Torrents`           | label displayed with no torrents     |
-| hide_turtle      | boolean      | optional     | false                   | hide turtle button                   |
-| hide_startstop   | boolean      | optional     | false                   | hide start/stop button               |
-| hide_type        | boolean      | optional     | true                    | hide type of torrents displayed      |
-| default_type     | string       | optional     | `total`                 | type of torrents to display at start |
-| display_mode     | string       | optional     | `compact`               | display mode: compact or full        |
-| sensor_name      | string       | optional     | `transmission`          | DEPRECATED. Name of the sensor. Use sensor_entity_id instead. It will be removed in a later release. |
-| sensor_entity_id | string       | optional     | `transmission`          | name of the sensor                   |
-| hide_header      | boolean      | optional     | false                   | hide header text at the top of card  |
-| header_text      | string       | optional     | `Transmission`          | header text at the top of card       |
-| hide_add_torrent | boolean      | optional     | false                   | hide add torrent input               |
+| Name                | Type         | Required     | Default                 | Description                          |
+| --------------------| ------------ | ------------ | ----------------------- | ------------------------------------ |
+| type                | string       | **required** |                         | `custom:transmission-card`           |
+| no_torrent_label    | string       | optional     | `No Torrents`           | label displayed with no torrents     |
+| hide_turtle         | boolean      | optional     | false                   | hide turtle button                   |
+| hide_startstop      | boolean      | optional     | false                   | hide start/stop button               |
+| hide_type           | boolean      | optional     | true                    | hide type of torrents displayed      |
+| default_type        | string       | optional     | `total`                 | type of torrents to display at start |
+| display_mode        | string       | optional     | `compact`               | display mode: compact or full        |
+| sensor_name         | string       | optional     | `transmission`          | DEPRECATED. Name of the sensor. Use sensor_entity_id instead. It will be removed in a later release. |
+| sensor_entity_id    | string       | optional     | `transmission`          | name of the sensor                   |
+| hide_header         | boolean      | optional     | false                   | hide header text at the top of card  |
+| header_text         | string       | optional     | `Transmission`          | header text at the top of card       |
+| hide_add_torrent    | boolean      | optional     | false                   | hide add torrent input               |
+| hide_delete_torrent | boolean      | optional     | false                   | hide delete torrent button           |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
