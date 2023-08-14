@@ -107,6 +107,12 @@ class TransmissionCard extends LitElement {
     this.hass.callService('transmission', 'stop_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
   }
 
+  _deleteTorrent(event) {
+    const torrentId = event.currentTarget.dataset.torrentId;
+    const deleteData = event.currentTarget.dataset.deleteData;
+    this.hass.callService('transmission', 'remove_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId, delete_data: deleteData });
+  }
+
   _addTorrent(event) {
     if (event.key !== 'Enter') return;
     const torrentMagnet = event.target.value;
@@ -138,7 +144,9 @@ class TransmissionCard extends LitElement {
       'sensor_entity_id': 'transmission',
       'header_text': 'Transmission',
       'hide_header': false,
-      'hide_add_torrent': false
+      'hide_add_torrent': false,
+      'hide_delete_torrent': false,
+      'hide_delete_torrent_full': false,
     }
 
     this.config = {
@@ -244,7 +252,11 @@ class TransmissionCard extends LitElement {
         </div>
       </div>
       <div class="torrent_details">${torrent.percent} %</div>
-      ${this.renderTorrentButton(torrent)}
+      <div class="torrent-buttons">
+        ${this.renderTorrentButton(torrent)}
+        ${this.renderTorrentDeleteButton(torrent, false)}
+        ${this.renderTorrentDeleteButton(torrent, true)}
+      </div>
     </div>
     `
   }
@@ -259,7 +271,6 @@ class TransmissionCard extends LitElement {
     const icon = isActive ? 'mdi:stop' : 'mdi:play';
 
     return html`
-    <div class="torrent-buttons">
       <ha-icon-button
         class="start_${torrent.state}"
         data-torrent-id=${torrent.id}
@@ -270,8 +281,37 @@ class TransmissionCard extends LitElement {
           <ha-icon
             icon="${icon}">
           </ha-icon>
-      </ha-icon-button>
-    </div>`
+      </ha-icon-button>`
+  }
+
+  renderTorrentDeleteButton(torrent, deleteData) {
+    if (!this._getConfigEntry()) {
+      return html``;
+    }
+
+    if (
+      this.config.hide_delete_torrent && !deleteData
+      || this.config.hide_delete_torrent_full && deleteData
+    ) {
+      return html``;
+    }
+    
+    const label = deleteData ? 'Delete with data' : 'Delete';
+    const icon = deleteData ? 'mdi:delete' : 'mdi:close';
+
+    return html`
+      <ha-icon-button
+        class="start_${torrent.state}"
+        data-torrent-id=${torrent.id}
+        data-delete-data=${deleteData}
+        @click="${this._deleteTorrent}"
+        title="${label}"
+        aria-label="${label}"
+        >
+          <ha-icon
+            icon="${icon}">
+          </ha-icon>
+      </ha-icon-button>`
   }
 
   renderTurtleButton() {
