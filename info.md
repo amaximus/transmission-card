@@ -45,6 +45,7 @@ resources:
 | hide_add_torrent         | boolean      | optional     | false                   | hide add torrent input               |
 | hide_delete_torrent      | boolean      | optional     | false                   | hide delete torrent button           |
 | hide_delete_torrent_full | boolean      | optional     | false                   | hide delete torrent with data button |
+| hide_torrent_list        | boolean      | optional     | false                   | hide torrent list |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 

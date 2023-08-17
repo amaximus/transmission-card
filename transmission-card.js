@@ -75,8 +75,8 @@ class TransmissionCard extends LitElement {
     const precision = this.hass.entities[speedSensor].display_precision;
     if (Intl) {
       return Intl.NumberFormat(
-        hass.locale.language, 
-        { 
+        hass.locale.language,
+        {
           minimumFractionDigits: precision,
           maximumFractionDigits: precision
         }).format(this.hass.states[speedSensor].state);
@@ -147,6 +147,7 @@ class TransmissionCard extends LitElement {
       'hide_add_torrent': false,
       'hide_delete_torrent': false,
       'hide_delete_torrent_full': false,
+      'hide_torrent_list': false,
     }
 
     this.config = {
@@ -174,14 +175,16 @@ class TransmissionCard extends LitElement {
               ${this.renderTitle()}
           </div>
           <div id="attributes">
-          ${torrents.length > 0
-            ? this.config.display_mode === 'compact'
-              ? html`${torrents.map(torrent => this.renderTorrent(torrent))}`
-              : html`
-                <div class="torrents">
-                  ${torrents.map(torrent => this.renderTorrentFull(torrent))}
-                </div>`
-            : html`<div class="no-torrent">${this.config.no_torrent_label}</div>`
+          ${ ! this.config.hide_torrent_list
+               ? torrents.length > 0
+                 ? this.config.display_mode === 'compact'
+                   ? html`${torrents.map(torrent => this.renderTorrent(torrent))}`
+                   : html`
+                     <div class="torrents">
+                       ${torrents.map(torrent => this.renderTorrentFull(torrent))}
+                     </div>`
+               : html`<div class="no-torrent">${this.config.no_torrent_label}</div>`
+             : html``
           }
           </div>
         </div>
@@ -295,7 +298,7 @@ class TransmissionCard extends LitElement {
     ) {
       return html``;
     }
-    
+
     const label = deleteData ? 'Delete with data' : 'Delete';
     const icon = deleteData ? 'mdi:delete' : 'mdi:close';
 
