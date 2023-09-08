@@ -53,12 +53,12 @@ class TransmissionCard extends LitElement {
   _getGAttributes(hass) {
     let sensor_entity_id = this.config.sensor_entity_id;
 
-    if (typeof this.hass.states[`sensor.${sensor_entity_id}_down_speed`] != "undefined") {
+    if (typeof this.hass.states[`sensor.${sensor_entity_id}_download_speed`] != "undefined") {
       return {
-        down_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_down_speed`),
-        down_unit: this.hass.states[`sensor.${sensor_entity_id}_down_speed`].attributes['unit_of_measurement'],
-        up_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_up_speed`),
-        up_unit: this.hass.states[`sensor.${sensor_entity_id}_up_speed`].attributes['unit_of_measurement'],
+        down_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_download_speed`),
+        down_unit: this.hass.states[`sensor.${sensor_entity_id}_download_speed`].attributes['unit_of_measurement'],
+        up_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_upload_speed`),
+        up_unit: this.hass.states[`sensor.${sensor_entity_id}_upload_speed`].attributes['unit_of_measurement'],
         status: this.hass.states[`sensor.${sensor_entity_id}_status`].state
       }
     }
