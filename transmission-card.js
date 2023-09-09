@@ -50,16 +50,16 @@ class TransmissionCard extends LitElement {
     return res;
   }
 
-  _getGAttributes(hass) {
+  _getGAttributes() {
     let sensor_entity_id = this.config.sensor_entity_id;
 
-    if (typeof this.hass.states[`sensor.${sensor_entity_id}_download_speed`] != "undefined") {
+    if (typeof this.hass.states[this.download_speed_entity_id] != "undefined") {
       return {
-        down_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_download_speed`),
-        down_unit: this.hass.states[`sensor.${sensor_entity_id}_download_speed`].attributes['unit_of_measurement'],
-        up_speed: this._formatSpeed(this.hass, `sensor.${sensor_entity_id}_upload_speed`),
-        up_unit: this.hass.states[`sensor.${sensor_entity_id}_upload_speed`].attributes['unit_of_measurement'],
-        status: this.hass.states[`sensor.${sensor_entity_id}_status`].state
+        down_speed: this._formatSpeed(this.hass, this.download_speed_entity_id),
+        down_unit: this.hass.states[this.download_speed_entity_id].attributes['unit_of_measurement'],
+        up_speed: this._formatSpeed(this.hass, this.upload_speed_entity_id),
+        up_unit: this.hass.states[this.upload_speed_entity_id].attributes['unit_of_measurement'],
+        status: this.hass.states[this.status_entity_id].state
       }
     }
     return {
@@ -86,7 +86,7 @@ class TransmissionCard extends LitElement {
   }
 
   _toggleTurtle() {
-    this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_entity_id}_turtle_mode` });
+    this.hass.callService('switch', 'toggle', { entity_id: this.turtle_mode_entity_id });
   }
 
   _toggleType(ev) {
@@ -94,39 +94,72 @@ class TransmissionCard extends LitElement {
   }
 
   _startStop() {
-    this.hass.callService('switch', 'toggle', { entity_id: `switch.${this.config.sensor_entity_id}_switch` });
+    this.hass.callService('switch', 'toggle', { entity_id: this.switch_entity_id });
   }
 
   _startTorrent(event) {
     const torrentId = event.currentTarget.dataset.torrentId;
-    this.hass.callService('transmission', 'start_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
+    this.hass.callService('transmission', 'start_torrent', { entry_id: `${this.config_entry}`, id: torrentId });
   }
 
   _stopTorrent(event) {
     const torrentId = event.currentTarget.dataset.torrentId;
-    this.hass.callService('transmission', 'stop_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId });
+    this.hass.callService('transmission', 'stop_torrent', { entry_id: `${this.config_entry}`, id: torrentId });
   }
 
   _deleteTorrent(event) {
     const torrentId = event.currentTarget.dataset.torrentId;
     const deleteData = event.currentTarget.dataset.deleteData;
-    this.hass.callService('transmission', 'remove_torrent', { entry_id: `${this._getConfigEntry()}`, id: torrentId, delete_data: deleteData });
+    this.hass.callService('transmission', 'remove_torrent', { entry_id: `${this.config_entry}`, id: torrentId, delete_data: deleteData });
   }
 
   _addTorrent(event) {
     if (event.key !== 'Enter') return;
     const torrentMagnet = event.target.value;
-    this.hass.callService('transmission', 'add_torrent', { entry_id: `${this._getConfigEntry()}`, torrent: torrentMagnet });
+    this.hass.callService('transmission', 'add_torrent', { entry_id: `${this.config_entry}`, torrent: torrentMagnet });
     event.target.value = '';
   }
 
-  _getConfigEntry() {
-    const entityRegistry = this.hass.connection._entityRegistryDisplay.state.entities.find(x => x.ei = 'sensor.transmission_status' && x.pl === 'transmission')
-    if (entityRegistry) {
-      return this.hass.devices[entityRegistry.id].config_entries[0];
+  get download_speed_entity_id() {
+    let download_speed = `sensor.${this.config.sensor_entity_id}_download_speed`;
+    if (typeof this.hass.states[download_speed] != "undefined") {
+      return download_speed;
     }
+    return `sensor.${this.config.sensor_entity_id}_down_speed`;
   }
 
+  get upload_speed_entity_id() {
+    let upload_speed = `sensor.${this.config.sensor_entity_id}_upload_speed`;
+    if (typeof this.hass.states[upload_speed] != "undefined") {
+      return upload_speed;
+    }
+    return `sensor.${this.config.sensor_entity_id}_up_speed`;
+  }
+
+  get turtle_mode_entity_id() {
+    return `switch.${this.config.sensor_entity_id}_turtle_mode`;
+  }
+
+  get switch_entity_id() {
+    return `switch.${this.config.sensor_entity_id}_switch`;
+  }
+
+  get status_entity_id() {
+    return `sensor.${this.config.sensor_entity_id}_status`;
+  }
+
+  get status_entity() {
+    return this.hass.entities[this.status_entity_id];
+  }
+
+  get device() {
+    return this.hass.devices[this.status_entity.device_id];
+  }
+
+  get config_entry() {
+    return this.device.config_entries[0];
+  }
+  
   setConfig(config) {
     if (config.display_mode &&
       !['compact', 'full'].includes(config.display_mode)) {
@@ -193,18 +226,18 @@ class TransmissionCard extends LitElement {
   }
 
   renderTitle() {
-    const gattributes = this._getGAttributes(this.hass);
+    const gattributes = this._getGAttributes();
     return html
     `
       <div id="title1">
-        <div class="status titleitem c-${gattributes.status.replace('/','')}">
+        <div class="status titleitem c-${gattributes.status.replace('/','')}" @click="${this._show_status}">
           <p>${gattributes.status}<p>
         </div>
-        <div class="titleitem">
+        <div class="titleitem" @click="${this._show_download_speed}">
           <ha-icon icon="mdi:download" class="down down-color"></ha-icon>
           <span>${gattributes.down_speed} ${gattributes.down_unit}</span>
         </div>
-        <div class="titleitem">
+        <div class="titleitem" @click="${this._show_upload_speed}">
           <ha-icon icon="mdi:upload" class="up up-color"></ha-icon>
           <span>${gattributes.up_speed} ${gattributes.up_unit}</span>
         </div>
@@ -214,7 +247,27 @@ class TransmissionCard extends LitElement {
       </div>
     `;
   }
+  
+  _show_more_info(entity_id) {
+    let e = new Event("hass-more-info", { composed: true });
+    e.detail = {
+      entityId: entity_id
+    };
+    this.dispatchEvent(e);
+  }
 
+  _show_download_speed() {
+    this._show_more_info(this.download_speed_entity_id);
+  }
+
+  _show_upload_speed() {
+    this._show_more_info(this.upload_speed_entity_id);
+  }
+
+  _show_status() {
+    this._show_more_info(this.status_entity_id);
+  }
+  
   renderAddTorrent() {
     if (this.config.hide_add_torrent) {
       return html``;
@@ -265,7 +318,7 @@ class TransmissionCard extends LitElement {
   }
 
   renderTorrentButton(torrent) {
-    if (!this._getConfigEntry()) {
+    if (!this.config_entry) {
       return html``;
     }
     const activeTorrentStatus = ['seeding', 'downloading']
@@ -288,7 +341,7 @@ class TransmissionCard extends LitElement {
   }
 
   renderTorrentDeleteButton(torrent, deleteData) {
-    if (!this._getConfigEntry()) {
+    if (!this.config_entry) {
       return html``;
     }
 
@@ -322,11 +375,11 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    if (typeof this.hass.states[`switch.${this.config.sensor_entity_id}_turtle_mode`] == "undefined") {
+    if (typeof this.hass.states[this.turtle_mode_entity_id] == "undefined") {
       return html``;
     }
 
-    const state = this.hass.states[`switch.${this.config.sensor_entity_id}_turtle_mode`].state;
+    const state = this.hass.states[this.turtle_mode_entity_id].state;
     return html`
       <div class="titleitem">
         <ha-icon-button
@@ -345,11 +398,11 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    if (typeof this.hass.states[`switch.${this.config.sensor_entity_id}_switch`] == "undefined") {
+    if (typeof this.hass.states[this.switch_entity_id] == "undefined") {
       return html``;
     }
 
-    const state = this.hass.states[`switch.${this.config.sensor_entity_id}_switch`].state;
+    const state = this.hass.states[this.switch_entity_id].state;
     const isOn = state === 'on';
     const icon = isOn ? 'mdi:stop' : 'mdi:play';
     const title = isOn ? 'Stop All' : 'Play All';
