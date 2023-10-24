@@ -39,7 +39,7 @@ resources:
 | default_type             | string       | optional     | `total`                 | type of torrents to display at start |
 | display_mode             | string       | optional     | `compact`               | display mode: compact or full        |
 | sensor_name              | string       | optional     | `transmission`          | DEPRECATED. Name of the sensor. Use sensor_entity_id instead. It will be removed in a later release. |
-| sensor_entity_id         | string       | optional     | `transmission`          | name of the sensor                   |
+| sensor_entity_id         | string       | optional     | `transmission`          | name of the sensor. Useful when using different entity name either deliberately or by e.g. HA generating localized entity name/id |
 | hide_header              | boolean      | optional     | false                   | hide header text at the top of card  |
 | header_text              | string       | optional     | `Transmission`          | header text at the top of card       |
 | hide_add_torrent         | boolean      | optional     | false                   | hide add torrent input               |
