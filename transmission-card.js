@@ -53,6 +53,7 @@ function sortDataBy (d, byKey){
 }
 
 const torrent_types = ['total','active','completed','paused','started'];
+const sort_types = ['name','added_date','id','status'];
 
 class TransmissionCard extends LitElement {
 
@@ -60,11 +61,12 @@ class TransmissionCard extends LitElement {
     return {
       config: {},
       hass: {},
-      selectedType: {state: true}
+      selectedType: {state: true},
+      selectedSort: {state: true}
     };
   }
 
-  _getTorrents(hass, type, sensor_entity_id) {
+  _getTorrents(hass, type, sort, sensor_entity_id) {
     var res = [];
     if (typeof this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`] != "undefined") {
       const data1 = this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`].attributes['torrent_info'];
@@ -79,7 +81,7 @@ class TransmissionCard extends LitElement {
         });
       });
     }
-    return sortDataBy(res, this.config.sort_torrent_list_by);
+    return sortDataBy(res, sort);
   }
 
   _getGAttributes() {
@@ -123,6 +125,10 @@ class TransmissionCard extends LitElement {
 
   _toggleType(ev) {
     this.selectedType = ev.target.value;
+  }
+
+  _toggleSort(ev) {
+    this.selectedSort = ev.target.value;
   }
 
   _startStop() {
@@ -213,7 +219,8 @@ class TransmissionCard extends LitElement {
       'hide_delete_torrent': false,
       'hide_delete_torrent_full': false,
       'hide_torrent_list': false,
-      'sort_torrent_list_by': 'name',
+      'hide_sort': true,
+      'default_sort': 'name',
     }
 
     this.config = {
@@ -222,6 +229,7 @@ class TransmissionCard extends LitElement {
     };
 
     this.selectedType = this.config.default_type;
+    this.selectedSort = this.config.default_sort;
   }
 
   render() {
@@ -229,7 +237,7 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    const torrents = this._getTorrents(this.hass, this.selectedType, this.config.sensor_entity_id);
+    const torrents = this._getTorrents(this.hass, this.selectedType, this.selectedSort, this.config.sensor_entity_id);
     return html`
       <ha-card>
         <div class="card-header">
@@ -277,6 +285,7 @@ class TransmissionCard extends LitElement {
         ${this.renderTurtleButton()}
         ${this.renderStartStopButton()}
         ${this.renderTypeSelect()}
+        ${this.renderSortSelect()}
       </div>
     `;
   }
@@ -480,6 +489,30 @@ class TransmissionCard extends LitElement {
           naturalMenuWidth
         >
           ${torrent_types.map(
+            (type) => html`
+              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
+          )}
+        </ha-select>
+      </div>
+    `;
+  }
+
+  renderSortSelect() {
+    if (this.config.hide_sort) {
+      return html``;
+    }
+
+    return html`
+      <div class="titleitem">
+        <ha-select
+          class="type-dropdown"
+          .label=${this.label}
+          @selected=${this._toggleSort}
+          .value=${this.selectedSort}
+          fixedMenuPosition
+          naturalMenuWidth
+        >
+          ${sort_types.map(
             (type) => html`
               <mwc-list-item .value=${type}>${type}</mwc-list-item>`
           )}
