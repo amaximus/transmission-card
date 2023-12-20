@@ -54,6 +54,7 @@ function sortDataBy (d, byKey){
 
 const torrent_types = ['total','active','completed','paused','started'];
 const sort_types = ['name','added_date','id','status'];
+const limit_types = ['5','10','15','all'];
 
 class TransmissionCard extends LitElement {
 
@@ -62,11 +63,12 @@ class TransmissionCard extends LitElement {
       config: {},
       hass: {},
       selectedType: {state: true},
-      selectedSort: {state: true}
+      selectedSort: {state: true},
+      selectedLimit: {state: true}
     };
   }
 
-  _getTorrents(hass, type, sort, sensor_entity_id) {
+  _getTorrents(hass, type, sort, limit, sensor_entity_id) {
     var res = [];
     if (typeof this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`] != "undefined") {
       const data1 = this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`].attributes['torrent_info'];
@@ -80,6 +82,9 @@ class TransmissionCard extends LitElement {
           eta: data1[key].eta,
         });
       });
+    }
+    if ( limit != "all" ) {
+      return sortDataBy(res, sort).slice(0, parseInt(limit));
     }
     return sortDataBy(res, sort);
   }
@@ -129,6 +134,10 @@ class TransmissionCard extends LitElement {
 
   _toggleSort(ev) {
     this.selectedSort = ev.target.value;
+  }
+
+  _toggleLimit(ev) {
+    this.selectedLimit = ev.target.value;
   }
 
   _startStop() {
@@ -221,6 +230,8 @@ class TransmissionCard extends LitElement {
       'hide_torrent_list': false,
       'hide_sort': true,
       'default_sort': 'name',
+      'hide_limit': true,
+      'default_limit': 'all',
     }
 
     this.config = {
@@ -230,6 +241,7 @@ class TransmissionCard extends LitElement {
 
     this.selectedType = this.config.default_type;
     this.selectedSort = this.config.default_sort;
+    this.selectedLimit = this.config.default_limit;
   }
 
   render() {
@@ -237,7 +249,7 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    const torrents = this._getTorrents(this.hass, this.selectedType, this.selectedSort, this.config.sensor_entity_id);
+    const torrents = this._getTorrents(this.hass, this.selectedType, this.selectedSort, this.selectedLimit, this.config.sensor_entity_id);
     return html`
       <ha-card>
         <div class="card-header">
@@ -286,6 +298,7 @@ class TransmissionCard extends LitElement {
         ${this.renderStartStopButton()}
         ${this.renderTypeSelect()}
         ${this.renderSortSelect()}
+        ${this.renderLimitSelect()}
       </div>
     `;
   }
@@ -513,6 +526,30 @@ class TransmissionCard extends LitElement {
           naturalMenuWidth
         >
           ${sort_types.map(
+            (type) => html`
+              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
+          )}
+        </ha-select>
+      </div>
+    `;
+  }
+
+  renderLimitSelect() {
+    if (this.config.hide_limit) {
+      return html``;
+    }
+
+    return html`
+      <div class="titleitem">
+        <ha-select
+          class="type-dropdown"
+          .label=${this.label}
+          @selected=${this._toggleLimit}
+          .value=${this.selectedLimit}
+          fixedMenuPosition
+          naturalMenuWidth
+        >
+          ${limit_types.map(
             (type) => html`
               <mwc-list-item .value=${type}>${type}</mwc-list-item>`
           )}

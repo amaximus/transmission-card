@@ -35,7 +35,7 @@ resources:
 | no_torrent_label         | string       | optional     | `No Torrents`           | label displayed with no torrents     |
 | hide_turtle              | boolean      | optional     | false                   | hide turtle button                   |
 | hide_startstop           | boolean      | optional     | false                   | hide start/stop button               |
-| hide_type                | boolean      | optional     | true                    | hide type of torrents displayed      |
+| hide_type                | boolean      | optional     | true                    | hide type selector                   |
 | default_type             | string       | optional     | `total`                 | type of torrents to display at start |
 | display_mode             | string       | optional     | `compact`               | display mode: compact or full        |
 | sensor_name              | string       | optional     | `transmission`          | DEPRECATED. Name of the sensor. Use sensor_entity_id instead. It will be removed in a later release. |
@@ -47,9 +47,15 @@ resources:
 | hide_delete_torrent_full | boolean      | optional     | false                   | hide delete torrent with data button |
 | hide_torrent_list        | boolean      | optional     | false                   | hide torrent list |
 | default_sort             | string       | optional     | `name`                  | sort type to display at start |
-| hide_sort                | boolean      | optional     | true                    | hide sort types |
+| hide_sort                | boolean      | optional     | true                    | hide sort selector |
+| default_limit            | string       | optional     | `all`                   | limit number of torrents to display at start |
+| hide_sort                | boolean      | optional     | true                    | hide limit selector |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
+
+Accepted values for default_sort are: `name`, `added_date`,`id`,`status`.
+
+Accepted values for default_limit are: `all`, `5`,`10`,`15`.
 
 Please find below an example of ui-lovelace.yaml card entry:
 
