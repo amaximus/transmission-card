@@ -46,16 +46,20 @@ resources:
 | hide_delete_torrent      | boolean      | optional     | false                   | hide delete torrent button           |
 | hide_delete_torrent_full | boolean      | optional     | false                   | hide delete torrent with data button |
 | hide_torrent_list        | boolean      | optional     | false                   | hide torrent list |
-| default_sort             | string       | optional     | `name`                  | sort type to display at start |
+| default_sort             | string       | optional     | `name`                  | sort type to display torrents at start |
 | hide_sort                | boolean      | optional     | true                    | hide sort selector |
+| default_order            | string       | optional     | `ascending`             | sort order to display torrents at start |
+| hide_order               | boolean      | optional     | true                    | hide sort selector |
 | default_limit            | string       | optional     | `all`                   | limit number of torrents to display at start |
-| hide_sort                | boolean      | optional     | true                    | hide limit selector |
+| hide_limit               | boolean      | optional     | true                    | hide limit selector |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
 Accepted values for default_sort are: `name`, `added_date`,`id`,`status`.
 
 Accepted values for default_limit are: `all`, `5`,`10`,`15`.
+
+Accepted values for default_order are: `ascending`, `descending`.
 
 Please find below an example of ui-lovelace.yaml card entry:
 

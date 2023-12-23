@@ -20,32 +20,52 @@ function hasConfigOrEntityChanged(element, changedProps) {
   return true;
 }
 
-function sortDataBy (d, byKey){
+function sortDataBy (d, byKey, order){
   let sortedData;
 
   if (byKey == 'name') {
     sortedData = d.sort(function(a,b){
       let x = a.name;
       let y = b.name;
-      if (x > y) { return 1; }
-      if (x < y) { return -1; }
+      if (order == "ascending") {
+        if (x > y) { return 1; }
+        if (x < y) { return -1; }
+      } else if (order == "descending") {
+        if (x < y) { return 1; }
+        if (x > y) { return -1; }
+      }
       return 0;
     });
 
   } else if (byKey == 'id') {
     sortedData = d.sort(function(a,b){
-      return a.id - b.id;
+      if (order == "ascending") {
+        return a.id - b.id;
+      }
+      return b.id - a.id;
     });
   } else if (byKey == 'added_date') {
     sortedData = d.sort(function(a,b){
-      return a.added_date - b.added_date;
+      let x = new Date(a.added_date)
+      let y = new Date(b.added_date)
+      if (order == "ascending") {
+        return x - y;
+      } else if (order == "descending") {
+        return y - x;
+      }
+      return 0;
     });
   } else if (byKey == 'status') {
     sortedData = d.sort(function(a,b){
       let x = a.status;
       let y = b.status;
-      if (x > y) { return 1; }
-      if (x < y) { return -1; }
+      if (order == "ascending") {
+        if (x > y) { return 1; }
+        if (x < y) { return -1; }
+        return 0;
+      }
+      if (x < y) { return 1; }
+      if (x > y) { return -1; }
       return 0;
     });
   }
@@ -54,6 +74,7 @@ function sortDataBy (d, byKey){
 
 const torrent_types = ['total','active','completed','paused','started'];
 const sort_types = ['name','added_date','id','status'];
+const order_types = ['ascending','descending'];
 const limit_types = ['5','10','15','all'];
 
 class TransmissionCard extends LitElement {
@@ -64,11 +85,12 @@ class TransmissionCard extends LitElement {
       hass: {},
       selectedType: {state: true},
       selectedSort: {state: true},
+      selectedOrder: {state: true},
       selectedLimit: {state: true}
     };
   }
 
-  _getTorrents(hass, type, sort, limit, sensor_entity_id) {
+  _getTorrents(hass, type, sort, order, limit, sensor_entity_id) {
     var res = [];
     if (typeof this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`] != "undefined") {
       const data1 = this.hass.states[`sensor.${sensor_entity_id}_${type}_torrents`].attributes['torrent_info'];
@@ -84,9 +106,9 @@ class TransmissionCard extends LitElement {
       });
     }
     if ( limit != "all" ) {
-      return sortDataBy(res, sort).slice(0, parseInt(limit));
+      return sortDataBy(res, sort, order).slice(0, parseInt(limit));
     }
-    return sortDataBy(res, sort);
+    return sortDataBy(res, sort, order);
   }
 
   _getGAttributes() {
@@ -134,6 +156,10 @@ class TransmissionCard extends LitElement {
 
   _toggleSort(ev) {
     this.selectedSort = ev.target.value;
+  }
+
+  _toggleOrder(ev) {
+    this.selectedOrder = ev.target.value;
   }
 
   _toggleLimit(ev) {
@@ -230,6 +256,8 @@ class TransmissionCard extends LitElement {
       'hide_torrent_list': false,
       'hide_sort': true,
       'default_sort': 'name',
+      'hide_order': true,
+      'default_order': 'ascending',
       'hide_limit': true,
       'default_limit': 'all',
     }
@@ -241,6 +269,7 @@ class TransmissionCard extends LitElement {
 
     this.selectedType = this.config.default_type;
     this.selectedSort = this.config.default_sort;
+    this.selectedOrder = this.config.default_order;
     this.selectedLimit = this.config.default_limit;
   }
 
@@ -249,7 +278,7 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    const torrents = this._getTorrents(this.hass, this.selectedType, this.selectedSort, this.selectedLimit, this.config.sensor_entity_id);
+    const torrents = this._getTorrents(this.hass, this.selectedType, this.selectedSort, this.selectedOrder, this.selectedLimit, this.config.sensor_entity_id);
     return html`
       <ha-card>
         <div class="card-header">
@@ -298,6 +327,7 @@ class TransmissionCard extends LitElement {
         ${this.renderStartStopButton()}
         ${this.renderTypeSelect()}
         ${this.renderSortSelect()}
+        ${this.renderOrderSelect()}
         ${this.renderLimitSelect()}
       </div>
     `;
@@ -526,6 +556,30 @@ class TransmissionCard extends LitElement {
           naturalMenuWidth
         >
           ${sort_types.map(
+            (type) => html`
+              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
+          )}
+        </ha-select>
+      </div>
+    `;
+  }
+
+  renderOrderSelect() {
+    if (this.config.hide_order) {
+      return html``;
+    }
+
+    return html`
+      <div class="titleitem">
+        <ha-select
+          class="type-dropdown"
+          .label=${this.label}
+          @selected=${this._toggleOrder}
+          .value=${this.selectedOrder}
+          fixedMenuPosition
+          naturalMenuWidth
+        >
+          ${order_types.map(
             (type) => html`
               <mwc-list-item .value=${type}>${type}</mwc-list-item>`
           )}
