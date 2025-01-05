@@ -189,7 +189,7 @@ class TransmissionCard extends LitElement {
   _addTorrent(event) {
     if (event.key !== 'Enter') return;
     const torrentMagnet = event.target.value;
-    this.hass.callService('transmission', 'add_torrent', { entry_id: `${this.config_entry}`, torrent: torrentMagnet });
+    this.hass.callService('transmission', 'add_torrent', { entry_id: `${this.config_entry}`, torrent: torrentMagnet , download_path: `${this.config.download_path}`});
     event.target.value = '';
   }
 
@@ -260,6 +260,7 @@ class TransmissionCard extends LitElement {
       'default_order': 'ascending',
       'hide_limit': true,
       'default_limit': 'all',
+      'download_path': '',
     }
 
     this.config = {
