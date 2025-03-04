@@ -4,6 +4,25 @@ const LitElement = Object.getPrototypeOf(
 const html = LitElement.prototype.html;
 const css = LitElement.prototype.css;
 
+const translations = {
+  "en": {
+    "sensor_state": {
+      "idle": "Idle",
+      "up_down": "Uploading/Downloading",
+      "seeding": "Seeding",
+      "downloading": "Downloading"
+    }
+  },
+  "ru": {
+    "sensor_state": {
+      "idle": "Бездействие",
+      "up_down": "Загрузка/Раздача",
+      "seeding": "Раздача",
+      "downloading": "Загрузка"
+    }
+  }
+}
+
 function hasConfigOrEntityChanged(element, changedProps) {
   if (changedProps.has("config")) {
     return true;
@@ -260,6 +279,10 @@ class TransmissionCard extends LitElement {
       'default_order': 'ascending',
       'hide_limit': true,
       'default_limit': 'all',
+      'hide_upload_speed': false,
+      'hide_download_speed': false,
+      'hide_status': false,
+      'force_status_newline': false,
     }
 
     this.config = {
@@ -312,17 +335,9 @@ class TransmissionCard extends LitElement {
     return html
     `
       <div id="title1">
-        <div class="status titleitem c-${gattributes.status.replace('/','')}" @click="${this._show_status}">
-          <p>${gattributes.status}<p>
-        </div>
-        <div class="titleitem" @click="${this._show_download_speed}">
-          <ha-icon icon="mdi:download" class="down down-color"></ha-icon>
-          <span>${gattributes.down_speed} ${gattributes.down_unit}</span>
-        </div>
-        <div class="titleitem" @click="${this._show_upload_speed}">
-          <ha-icon icon="mdi:upload" class="up up-color"></ha-icon>
-          <span>${gattributes.up_speed} ${gattributes.up_unit}</span>
-        </div>
+        ${this.renderStatus(gattributes)}
+        ${this.renderDownloadSpeed(gattributes)}
+        ${this.renderUploadSpeed(gattributes)}
         ${this.renderTurtleButton()}
         ${this.renderStartStopButton()}
         ${this.renderTypeSelect()}
@@ -372,12 +387,10 @@ class TransmissionCard extends LitElement {
   }
 
   renderTorrent(torrent) {
-    return html
-    `
+    return html`
       <div class="progressbar">
-          <div class="${torrent.status} progressin" style="width:${torrent.percent}%">
-          </div>
-          <div class="name">${torrent.name}</div>
+        <div class="${torrent.status} progressin" style="width:${torrent.percent}%"></div>
+        <div class="name">${torrent.name}</div>
         <div class="percent">${torrent.percent}%</div>
       </div>
     `;
@@ -453,6 +466,48 @@ class TransmissionCard extends LitElement {
             icon="${icon}">
           </ha-icon>
       </ha-icon-button>`
+  }
+
+  renderStatus(gattributes) {
+    if (this.config.hide_status) {
+      return html``;
+    }
+
+    const status = gattributes.status;
+    const statusClass = this.config.force_status_newline ? "status-newline": "";
+
+
+    return html`
+      <div class="status titleitem c-${status.replace('/', '')} ${statusClass}" @click="${this._show_status}">
+        <p>${translations[this.hass.config.language]?.sensor_state[status] || translations['en'].sensor_state[status] || status}</p>
+      </div>
+    `;
+  }
+
+  renderDownloadSpeed(gattributes) {
+    if (this.config.hide_download_speed) {
+      return html``;
+    }
+
+    return html`
+      <div class="titleitem" @click="${this._show_download_speed}">
+        <ha-icon icon="mdi:download" class="down down-color"></ha-icon>
+        <span>${gattributes.down_speed} ${gattributes.down_unit}</span>
+      </div>
+    `;
+  }
+
+  renderUploadSpeed(gattributes) {
+    if (this.config.hide_upload_speed) {
+      return html``;
+    }
+
+    return html`
+      <div class="titleitem" @click="${this._show_upload_speed}">
+        <ha-icon icon="mdi:upload" class="up up-color"></ha-icon>
+        <span>${gattributes.up_speed} ${gattributes.up_unit}</span>
+      </div>
+    `;
   }
 
   renderTurtleButton() {
@@ -686,7 +741,7 @@ class TransmissionCard extends LitElement {
 
     #title {
       position: relative;
-      display: inline;
+      display: inline-block;
       width: 100%;
     }
     #title1 {
@@ -710,6 +765,12 @@ class TransmissionCard extends LitElement {
     }
     .status {
       font-size: 1em;
+    }
+    .status-newline {
+      width: 100%;
+      text-align: left;
+      margin-left: 1.4em;
+      line-height: 1rem;
     }
     .turtle_off {
       color: var(--light-primary-color);

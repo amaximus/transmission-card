@@ -32,7 +32,7 @@ resources:
 | Name                     | Type         | Required     | Default                 | Description                          |
 | -------------------------| ------------ | ------------ | ----------------------- | ------------------------------------ |
 | type                     | string       | **required** |                         | `custom:transmission-card`           |
-| no_torrent_label         | string       | optional     | `No Torrents`           | label displayed with no torrents     |
+| no_torrent_label         | string       | optional     | `No Torrents`           | label displayed with no torrents, to hide set "" |
 | hide_turtle              | boolean      | optional     | false                   | hide turtle button                   |
 | hide_startstop           | boolean      | optional     | false                   | hide start/stop button               |
 | hide_type                | boolean      | optional     | true                    | hide type selector                   |
@@ -42,6 +42,10 @@ resources:
 | sensor_entity_id         | string       | optional     | `transmission`          | name of the sensor. Useful when using different entity name either deliberately or by e.g. HA generating localized entity name/id |
 | hide_header              | boolean      | optional     | false                   | hide header text at the top of card  |
 | header_text              | string       | optional     | `Transmission`          | header text at the top of card       |
+| force_status_newline     | boolean      | optional     | false                   | display the status on a separate line to avoid flickering due to different text lengths |
+| hide_status              | boolean      | optional     | false                   | hide status label |
+| hide_download_speed      | boolean      | optional     | false                   | hide download speed |
+| hide_upload_speed        | boolean      | optional     | false                   | hide upload speed |
 | hide_add_torrent         | boolean      | optional     | false                   | hide add torrent input               |
 | hide_delete_torrent      | boolean      | optional     | false                   | hide delete torrent button           |
 | hide_delete_torrent_full | boolean      | optional     | false                   | hide delete torrent with data button |
