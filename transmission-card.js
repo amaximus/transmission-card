@@ -11,7 +11,65 @@ const translations = {
       "up_down": "Uploading/Downloading",
       "seeding": "Seeding",
       "downloading": "Downloading"
-    }
+    },
+    "torrent_state": {
+      "stopped": "Stopped",
+      "check_pending": "Check Pending",
+      "checking": "Checking",
+      "download_pending": "Download Pending",
+      "downloading": "Downloading",
+      "seed_pending": "Seed Pending",
+      "seeding": "Seeding"
+    },
+    "torrent_types": {
+      "total": "All",
+      "active": "Active",
+      "completed": "Completed",
+      "paused": "Paused",
+      "started": "Started"
+    },
+    "torrent_link": "Torrent Link",
+    "your_magnet_link": "Your magnet link",
+    "start_all": "Start All",
+    "stop_all": "Stop All",
+    "turtle_mode": "Turtle Mode",
+    "start": "Start",
+    "stop": "Stop",
+    "delete": "Delete torrent",
+    "delete_data": "Delete torrent and data"
+  },
+  "pt-BR": {
+    "sensor_state": {
+      "idle": "Ocioso",
+      "up_down": "Semeando/Baixando",
+      "seeding": "Semeando",
+      "downloading": "Baixando"
+    },
+    "torrent_state": {
+      "stopped": "Parado",
+      "check_pending": "VerificaÃ§Ã£o Pendente",
+      "checking": "Verificando",
+      "download_pending": "Download Pendente",
+      "downloading": "Baixando",
+      "seed_pending": "Semeadura Pendente",
+      "seeding": "Semeando"
+    },
+    "torrent_types": {
+      "total": "Todos",
+      "active": "Ativos",
+      "completed": "Completos",
+      "paused": "Pausados",
+      "started": "Iniciados"
+    },
+    "torrent_link": "Link do Torrent",
+    "your_magnet_link": "Seu link magnet",
+    "start_all": "Iniciar Todos",
+    "stop_all": "Parar Todos",
+    "turtle_mode": "Modo Tartaruga",
+    "start": "Iniciar",
+    "stop": "Parar",
+    "delete": "Remover torrent",
+    "delete_data": "Remover torrent e arquivos"
   },
   "ru": {
     "sensor_state": {
@@ -377,10 +435,10 @@ class TransmissionCard extends LitElement {
     `
       <div id="addTorrent">
         <ha-textfield
-          placeholder="Your magnet link"
+          placeholder="${translations[this.hass.config.language]?.your_magnet_link || translations['en'].your_magnet_link}"
           name="addTorrent"
           @keypress="${this._addTorrent}"
-          label="Torrent link">
+          label="${translations[this.hass.config.language]?.torrent_link || translations['en'].torrent_link}">
         </ha-textfield>
       </div>
     `
@@ -400,7 +458,7 @@ class TransmissionCard extends LitElement {
     return html`
     <div class="torrent">
       <div class="torrent_name">${torrent.name}</div>
-      <div class="torrent_state">${torrent.status}</div>
+      <div class="torrent_state">${translations[this.hass.config.language]?.torrent_state[torrent.status] || translations['en'].torrent_state[torrent.status] || torrent.status}</div>
       <div class="progressbar">
         <div class="${torrent.status} progressin" style="width:${torrent.percent}%">
         </div>
@@ -421,7 +479,7 @@ class TransmissionCard extends LitElement {
     }
     const activeTorrentStatus = ['seeding', 'downloading']
     const isActive = activeTorrentStatus.includes(torrent.status);
-    const label = isActive ? 'Stop' : 'Start';
+    const label = isActive ? translations[this.hass.config.language]?.stop || translations['en'].stop : translations[this.hass.config.language]?.start || translations['en'].start;
     const icon = isActive ? 'mdi:stop' : 'mdi:play';
 
     return html`
@@ -450,7 +508,7 @@ class TransmissionCard extends LitElement {
       return html``;
     }
 
-    const label = deleteData ? 'Delete with data' : 'Delete';
+    const label = deleteData ? translations[this.hass.config.language]?.delete_data || translations['en'].delete_data : translations[this.hass.config.language]?.delete || translations['en'].delete;
     const icon = deleteData ? 'mdi:delete' : 'mdi:close';
 
     return html`
@@ -525,7 +583,7 @@ class TransmissionCard extends LitElement {
         <ha-icon-button
           class="turtle_${state}"
           @click="${this._toggleTurtle}"
-          title="turtle mode"
+          title="${translations[this.hass.config.language]?.turtle_mode || translations['en'].turtle_mode}"
           id="turtle">
           <ha-icon icon="mdi:turtle"></ha-icon>
         </ha-icon-button>
@@ -545,7 +603,7 @@ class TransmissionCard extends LitElement {
     const state = this.hass.states[this.switch_entity_id].state;
     const isOn = state === 'on';
     const icon = isOn ? 'mdi:stop' : 'mdi:play';
-    const title = isOn ? 'Stop All' : 'Play All';
+    const title = isOn ? translations[this.hass.config.language]?.stop_all || translations['en'].stop_all : translations[this.hass.config.language]?.start_all || translations['en'].start_all;
     return html`
       <div class="titleitem">
         <ha-icon-button
@@ -587,9 +645,9 @@ class TransmissionCard extends LitElement {
           naturalMenuWidth
         >
           ${torrent_types.map(
-            (type) => html`
-              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
-          )}
+      (type) => html`
+              <mwc-list-item .value=${type}>${translations[this.hass.config.language]?.torrent_types[type] || translations['en'].torrent_types[type] || type}</mwc-list-item>`
+    )}
         </ha-select>
       </div>
     `;
