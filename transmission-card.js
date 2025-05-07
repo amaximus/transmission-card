@@ -36,7 +36,8 @@ const translations = {
     "start": "Start",
     "stop": "Stop",
     "delete": "Delete torrent",
-    "delete_data": "Delete torrent and data"
+    "delete_data": "Delete torrent and data",
+    "ratio": "Ratio"
   },
   "pt-BR": {
     "sensor_state": {
@@ -69,7 +70,8 @@ const translations = {
     "start": "Iniciar",
     "stop": "Parar",
     "delete": "Remover torrent",
-    "delete_data": "Remover torrent e arquivos"
+    "delete_data": "Remover torrent e arquivos",
+    "ratio": "Proporção"
   },
   "ru": {
     "sensor_state": {
@@ -179,6 +181,7 @@ class TransmissionCard extends LitElement {
           status: data1[key].status,
           added_date: data1[key].added_date,
           eta: data1[key].eta,
+          ratio: data1[key].ratio
         });
       });
     }
@@ -463,7 +466,10 @@ class TransmissionCard extends LitElement {
         <div class="${torrent.status} progressin" style="width:${torrent.percent}%">
         </div>
       </div>
-      <div class="torrent_details">${torrent.percent} %</div>
+      <div class="torrent_details">
+        ${torrent.percent} %
+        ${this.config.hide_ratio ? '' : ` - ${translations[this.hass.config.language]?.ratio || translations['en'].ratio}: ${torrent.ratio.toFixed(2)}`}
+      </div>
       <div class="torrent-buttons">
         ${this.renderTorrentButton(torrent)}
         ${this.renderTorrentDeleteButton(torrent, false)}
