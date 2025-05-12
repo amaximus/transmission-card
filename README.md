@@ -56,6 +56,7 @@ resources:
 | hide_order               | boolean      | optional     | true                    | hide sort selector |
 | default_limit            | string       | optional     | `all`                   | limit number of torrents to display at start |
 | hide_limit               | boolean      | optional     | true                    | hide limit selector |
+| hide_ratio               | boolean      | optional     | false                   | hide torrent ratio |
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
