@@ -79,7 +79,33 @@ const translations = {
       "up_down": "Загрузка/Раздача",
       "seeding": "Раздача",
       "downloading": "Загрузка"
-    }
+    },
+    "torrent_state": {
+      "stopped": "Остановлены",
+      "check_pending": "Ожидание проверки",
+      "checking": "Проверка",
+      "download_pending": "Ожидание загрузки",
+      "downloading": "Загрузка",
+      "seed_pending": "Ожидание раздачи",
+      "seeding": "Раздача"
+    },
+    "torrent_types": {
+      "total": "Все",
+      "active": "Активны",
+      "completed": "Завершены",
+      "paused": "Остановлены",
+      "started": "Запущены"
+    },
+    "torrent_link": "Торрент ссылка",
+    "your_magnet_link": "Magnet-ссылка",
+    "start_all": "Запустить все",
+    "stop_all": "Остановить все",
+    "turtle_mode": "Режим черепахи",
+    "start": "Запустить",
+    "stop": "Остановить",
+    "delete": "Удалить торрент",
+    "delete_data": "Удалить торрент и данные",
+    "ratio": "соотношение"
   }
 }
 
