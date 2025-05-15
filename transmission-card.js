@@ -81,13 +81,14 @@ const translations = {
       "downloading": "Загрузка"
     },
     "torrent_state": {
-      "stopped": "Остановлены",
+      "stopped": "Остановлено",
       "check_pending": "Ожидание проверки",
       "checking": "Проверка",
       "download_pending": "Ожидание загрузки",
       "downloading": "Загрузка",
       "seed_pending": "Ожидание раздачи",
       "seeding": "Раздача"
+
     },
     "torrent_types": {
       "total": "Все",
