@@ -66,6 +66,8 @@ Accepted values for default_limit are: `all`, `5`,`10`,`15`.
 
 Accepted values for default_order are: `ascending`, `descending`.
 
+The card doesn't support entity translation, therefore the card accepts sensors to be sensor.<sensor_entity_id>_started_torrents, sensor.<sensor_entity_id>_total_torrents, etc. . Sensors whose names were auto-translated to non-English languages need to be renamed to English version.
+
 Please find below an example of ui-lovelace.yaml card entry:
 
 ```yaml
