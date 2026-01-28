@@ -534,7 +534,10 @@ class TransmissionCard extends LitElement {
       <div class="progressbar">
         <div class="${torrent.status} progressin" style="width:${torrent.percent}%; ${colorStyle}"></div>
         <div class="name">${torrent.name}</div>
-        <div class="percent">${torrent.percent}%</div>
+        <div class="percent">
+          ${torrent.percent}%
+          ${this.config.hide_eta || !torrent.eta || torrent.eta < 0 ? '' : ` - ${translations[this.hass.config.language]?.eta || translations['en'].eta}: ${this._formatEta(torrent.eta)}`}
+        </div>
       </div>
     `;
   }
