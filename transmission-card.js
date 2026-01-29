@@ -37,7 +37,8 @@ const translations = {
     "stop": "Stop",
     "delete": "Delete torrent",
     "delete_data": "Delete torrent and data",
-    "ratio": "Ratio"
+    "ratio": "Ratio",
+    "eta": "ETA"
   },
   "pt-BR": {
     "sensor_state": {
@@ -71,7 +72,8 @@ const translations = {
     "stop": "Parar",
     "delete": "Remover torrent",
     "delete_data": "Remover torrent e arquivos",
-    "ratio": "Proporção"
+    "ratio": "Proporção",
+    "eta": "ETA"
   },
   "ru": {
     "sensor_state": {
@@ -106,7 +108,8 @@ const translations = {
     "stop": "Остановить",
     "delete": "Удалить торрент",
     "delete_data": "Удалить торрент и данные",
-    "ratio": "соотношение"
+    "ratio": "соотношение",
+    "eta": "ETA"
   }
 }
 
@@ -212,6 +215,12 @@ class TransmissionCard extends LitElement {
         });
       });
     }
+    
+    // Filter seeding torrents if hide_seeding is enabled and type is 'active'
+    if (this.config.hide_seeding && type === 'active') {
+      res = res.filter(torrent => torrent.status !== 'seeding');
+    }
+    
     if ( limit != "all" ) {
       return sortDataBy(res, sort, order).slice(0, parseInt(limit));
     }
@@ -251,6 +260,41 @@ class TransmissionCard extends LitElement {
     }
 
     return parseFloat(this.hass.states[speedSensor].state).toFixed(precision);
+  }
+
+  _formatEta(seconds) {
+    if (seconds < 0) {
+      return 'Unknown';
+    }
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m`;
+    } else {
+      return `${seconds}s`;
+    }
+  }
+  
+  _getCustomColor(status) {
+    if (!this.config.custom_colors) {
+      return null;
+    }
+    
+    if (status === 'downloading' && this.config.custom_colors.downloading) {
+      return this.config.custom_colors.downloading;
+    }
+    if (status === 'seeding' && this.config.custom_colors.seeding) {
+      return this.config.custom_colors.seeding;
+    }
+    if (status === 'stopped' && this.config.custom_colors.stopped) {
+      return this.config.custom_colors.stopped;
+    }
+    
+    return null;
   }
 
   _toggleTurtle() {
@@ -371,6 +415,15 @@ class TransmissionCard extends LitElement {
       'hide_download_speed': false,
       'hide_status': false,
       'force_status_newline': false,
+      'hide_seeding': false,
+      'hide_eta': false,
+      'hide_header_eta': false,
+      'hide_ratio': false,
+      'custom_colors': {
+        'downloading': null,
+        'seeding': null,
+        'stopped': null
+      }
     }
 
     this.config = {
@@ -475,27 +528,36 @@ class TransmissionCard extends LitElement {
   }
 
   renderTorrent(torrent) {
+    const customColor = this._getCustomColor(torrent.status);
+    const colorStyle = customColor ? `background-color: ${customColor};` : '';
+    const etaLabel = this.config.hide_header_eta ? '' : `${translations[this.hass.config.language]?.eta || translations['en'].eta}: `;
+    
     return html`
       <div class="progressbar">
-        <div class="${torrent.status} progressin" style="width:${torrent.percent}%"></div>
+        <div class="${torrent.status} progressin" style="width:${torrent.percent}%; ${colorStyle}"></div>
         <div class="name">${torrent.name}</div>
+        ${this.config.hide_eta || !torrent.eta || torrent.eta < 0 ? '' : html`<div class="eta">${etaLabel}${this._formatEta(torrent.eta)}</div>`}
         <div class="percent">${torrent.percent}%</div>
       </div>
     `;
   }
 
   renderTorrentFull(torrent) {
+    const customColor = this._getCustomColor(torrent.status);
+    const colorStyle = customColor ? `background-color: ${customColor};` : '';
+    
     return html`
     <div class="torrent">
       <div class="torrent_name">${torrent.name}</div>
       <div class="torrent_state">${translations[this.hass.config.language]?.torrent_state[torrent.status] || translations['en'].torrent_state[torrent.status] || torrent.status}</div>
       <div class="progressbar">
-        <div class="${torrent.status} progressin" style="width:${torrent.percent}%">
+        <div class="${torrent.status} progressin" style="width:${torrent.percent}%; ${colorStyle}">
         </div>
       </div>
       <div class="torrent_details">
         ${torrent.percent} %
         ${this.config.hide_ratio ? '' : ` - ${translations[this.hass.config.language]?.ratio || translations['en'].ratio}: ${torrent.ratio.toFixed(2)}`}
+        ${this.config.hide_eta || !torrent.eta || torrent.eta < 0 ? '' : ` - ${this.config.hide_header_eta ? '' : `${translations[this.hass.config.language]?.eta || translations['en'].eta}: `}${this._formatEta(torrent.eta)}`}
       </div>
       <div class="torrent-buttons">
         ${this.renderTorrentButton(torrent)}
@@ -787,19 +849,30 @@ class TransmissionCard extends LitElement {
     }
     .name {
       margin-left: 0.7em;
-      width: calc(100% - 60px);
       overflow: hidden;
       z-index: 2;
       color: var(--text-light-primary-color, var(--primary-text-color));
       line-height: 1.4em;
+      flex-shrink: 1;
+    }
+    .eta {
+      z-index: 2;
+      margin-left: 0.7em;
+      margin-right: 0.7em;
+      color: var(--text-light-primary-color, var(--primary-text-color));
+      line-height: 1.4em;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .percent {
       vertical-align: middle;
       z-index: 2;
-      margin-left: 1.7em;
+      margin-left: auto;
       margin-right: 0.7em;
       color: var(--text-light-primary-color, var(--primary-text-color));
       line-height: 1.4em;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .downloading {
       background-color: var(--accent-color);
