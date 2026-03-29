@@ -37,6 +37,7 @@ resources:
 | hide_startstop           | boolean      | optional     | false                   | hide start/stop button               |
 | hide_type                | boolean      | optional     | true                    | hide type selector                   |
 | default_type             | string       | optional     | `total`                 | type of torrents to display at start |
+| default_download_dir     | string       | optional     | ``                      | absolute path to the download directory |
 | display_mode             | string       | optional     | `compact`               | display mode: compact or full        |
 | sensor_name              | string       | optional     | `transmission`          | DEPRECATED. Name of the sensor. Use sensor_entity_id instead. It will be removed in a later release. |
 | sensor_entity_id         | string       | optional     | `transmission`          | name of the sensor. Useful when using different entity name either deliberately or by e.g. HA generating localized entity name/id |
@@ -57,6 +58,21 @@ resources:
 | default_limit            | string       | optional     | `all`                   | limit number of torrents to display at start |
 | hide_limit               | boolean      | optional     | true                    | hide limit selector |
 | hide_ratio               | boolean      | optional     | false                   | hide torrent ratio |
+| hide_eta                 | boolean      | optional     | false                   | hide ETA (estimated time of arrival) |
+| hide_header_eta          | boolean      | optional     | false                   | hide label |
+| hide_seeding             | boolean      | optional     | false                   | hide seeding torrents from active list |
+| custom_colors            | object       | optional     | null                    | custom colors for torrent states (see below) |
+
+#### Custom Colors
+
+You can customize the progress bar colors for different torrent states:
+
+```yaml
+custom_colors:
+  downloading: '#00ff00'  # Color for downloading torrents
+  seeding: '#0000ff'      # Color for seeding torrents
+  stopped: '#ff0000'      # Color for stopped torrents
+```
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
@@ -75,6 +91,11 @@ Please find below an example of ui-lovelace.yaml card entry:
       - type: custom:transmission-card
         hide_type: false
         default_type: 'active'
+        hide_eta: false
+        hide_header_eta: true
+        custom_colors:
+          downloading: '#2196F3'
+          seeding: '#4CAF50'
 ```
 
 Transmission idle in compact mode:

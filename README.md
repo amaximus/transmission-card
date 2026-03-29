@@ -37,6 +37,7 @@ resources:
 | hide_startstop           | boolean      | optional     | false                   | hide start/stop button               |
 | hide_type                | boolean      | optional     | true                    | hide type selector                   |
 | default_type             | string       | optional     | `total`                 | type of torrents to display at start |
+| default_download_dir     | string       | optional     | ``                      | absolute path to the download directory |
 | display_mode             | string       | optional     | `compact`               | display mode: compact or full        |
 | sensor_name              | string       | optional     | `transmission`          | DEPRECATED. Name of the sensor. Use sensor_entity_id instead. It will be removed in a later release. |
 | sensor_entity_id         | string       | optional     | `transmission`          | name of the sensor. Useful when using different entity name either deliberately or by e.g. HA generating localized entity name/id |
