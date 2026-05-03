@@ -342,7 +342,7 @@ class TransmissionCard extends LitElement {
     const torrentMagnet = event.target.value;
 
     let payload = {
-      entity_id: `${this.config_entry}`,
+      entry_id: `${this.config_entry}`,
       torrent: torrentMagnet
     };
 
