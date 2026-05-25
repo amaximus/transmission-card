@@ -22,11 +22,16 @@ const translations = {
       "seeding": "Seeding"
     },
     "torrent_types": {
-      "total": "All",
-      "active": "Active",
-      "completed": "Completed",
-      "paused": "Paused",
-      "started": "Started"
+      "total": "total",
+      "active": "active",
+      "completed": "completed",
+      "paused": "paused",
+      "started": "started"
+    },
+    "sort_types": {
+      "name": "name",
+      "added_date": "added_date",
+      "status": "status"
     },
     "torrent_link": "Torrent Link",
     "your_magnet_link": "Your magnet link",
@@ -38,7 +43,10 @@ const translations = {
     "delete": "Delete torrent",
     "delete_data": "Delete torrent and data",
     "ratio": "Ratio",
-    "eta": "ETA"
+    "eta": "ETA",
+    "all": "all",
+    "ascending": "ascending",
+    "descending": "descending"
   },
   "pt-BR": {
     "sensor_state": {
@@ -63,6 +71,11 @@ const translations = {
       "paused": "Pausados",
       "started": "Iniciados"
     },
+    "sort_types": {
+      "name": "nome",
+      "added_date": "data de adição",
+      "status": "status"
+    },
     "torrent_link": "Link do Torrent",
     "your_magnet_link": "Seu link magnet",
     "start_all": "Iniciar Todos",
@@ -73,7 +86,10 @@ const translations = {
     "delete": "Remover torrent",
     "delete_data": "Remover torrent e arquivos",
     "ratio": "Proporção",
-    "eta": "ETA"
+    "eta": "ETA",
+    "all": "todos",
+    "ascending": "ascendente",
+    "descending": "descendo"
   },
   "ru": {
     "sensor_state": {
@@ -99,6 +115,11 @@ const translations = {
       "paused": "Остановлены",
       "started": "Запущены"
     },
+    "sort_types": {
+      "name": "имя",
+      "added_date": "добавлена_дата",
+      "status": "статус"
+    },
     "torrent_link": "Торрент ссылка",
     "your_magnet_link": "Magnet-ссылка",
     "start_all": "Запустить все",
@@ -109,7 +130,10 @@ const translations = {
     "delete": "Удалить торрент",
     "delete_data": "Удалить торрент и данные",
     "ratio": "соотношение",
-    "eta": "ETA"
+    "eta": "ETA",
+    "all": "все",
+    "ascending": "восходящий",
+    "descending": "нисходящий"
   }
 }
 
@@ -181,22 +205,19 @@ function sortDataBy (d, byKey, order){
   return sortedData;
 }
 
-const torrent_types = ['total','active','completed','paused','started'];
-const sort_types = ['name','added_date','id','status'];
-const order_types = ['ascending','descending'];
-const limit_types = ['5','10','15','all'];
-
 class TransmissionCard extends LitElement {
 
-  static get properties() {
-    return {
-      config: {},
-      hass: {},
-      selectedType: {state: true},
-      selectedSort: {state: true},
-      selectedOrder: {state: true},
-      selectedLimit: {state: true}
-    };
+  static properties = {
+    config: {},
+    hass: {},
+    selectedType: {},
+    selectedSort: {},
+    selectedOrder: {},
+    selectedLimit: {},
+  };
+
+  constructor() {
+    super();
   }
 
   _getTorrents(hass, type, sort, order, limit, sensor_entity_id) {
@@ -215,12 +236,12 @@ class TransmissionCard extends LitElement {
         });
       });
     }
-    
+
     // Filter seeding torrents if hide_seeding is enabled and type is 'active'
     if (this.config.hide_seeding && type === 'active') {
       res = res.filter(torrent => torrent.status !== 'seeding');
     }
-    
+
     if ( limit != "all" ) {
       return sortDataBy(res, sort, order).slice(0, parseInt(limit));
     }
@@ -266,10 +287,10 @@ class TransmissionCard extends LitElement {
     if (seconds < 0) {
       return 'Unknown';
     }
-    
+
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes}m`;
     } else if (minutes > 0) {
@@ -278,12 +299,12 @@ class TransmissionCard extends LitElement {
       return `${seconds}s`;
     }
   }
-  
+
   _getCustomColor(status) {
     if (!this.config.custom_colors) {
       return null;
     }
-    
+
     if (status === 'downloading' && this.config.custom_colors.downloading) {
       return this.config.custom_colors.downloading;
     }
@@ -293,7 +314,7 @@ class TransmissionCard extends LitElement {
     if (status === 'stopped' && this.config.custom_colors.stopped) {
       return this.config.custom_colors.stopped;
     }
-    
+
     return null;
   }
 
@@ -302,7 +323,8 @@ class TransmissionCard extends LitElement {
   }
 
   _toggleType(ev) {
-    this.selectedType = ev.target.value;
+    ev.stopPropagation();
+    this.selectedType = ev.detail.value.selectedType;
   }
 
   _toggleSort(ev) {
@@ -542,7 +564,7 @@ class TransmissionCard extends LitElement {
     const customColor = this._getCustomColor(torrent.status);
     const colorStyle = customColor ? `background-color: ${customColor};` : '';
     const etaLabel = this.config.hide_header_eta ? '' : `${translations[this.hass.config.language]?.eta || translations['en'].eta}: `;
-    
+
     return html`
       <div class="progressbar">
         <div class="${torrent.status} progressin" style="width:${torrent.percent}%; ${colorStyle}"></div>
@@ -556,7 +578,7 @@ class TransmissionCard extends LitElement {
   renderTorrentFull(torrent) {
     const customColor = this._getCustomColor(torrent.status);
     const colorStyle = customColor ? `background-color: ${customColor};` : '';
-    
+
     return html`
     <div class="torrent">
       <div class="torrent_name">${torrent.name}</div>
@@ -736,97 +758,140 @@ class TransmissionCard extends LitElement {
   }
 
   renderTypeSelect() {
+    const schema = [
+      {
+        name: 'selectedType',
+        type: 'select',
+        selector: {
+          select: {
+            multiple: false,
+            mode: "dropdown",
+            options: [
+              { label: translations[this.hass.config.language]?.torrent_types['total'] || translations['en'].torrent_types['total'], value: "total" },
+              { label: translations[this.hass.config.language]?.torrent_types['active'] || translations['en'].torrent_types['active'], value: "active" },
+              { label: translations[this.hass.config.language]?.torrent_types['completed'] || translations['en'].torrent_types['completed'], value: "completed" },
+              { label: translations[this.hass.config.language]?.torrent_types['paused'] || translations['en'].torrent_types['paused'], value: "paused" },
+            ],
+          },
+        },
+      },
+    ];
+
     if (this.config.hide_type) {
       return html``;
     }
 
     return html`
       <div class="titleitem">
-        <ha-select
-          class="type-dropdown"
-          .label=${this.label}
-          @selected=${this._toggleType}
-          .value=${this.selectedType}
-          fixedMenuPosition
-          naturalMenuWidth
+        <ha-form
+          .schema=${schema}
+          @value-changed=${this._toggleType}
         >
-          ${torrent_types.map(
-      (type) => html`
-              <mwc-list-item .value=${type}>${translations[this.hass.config.language]?.torrent_types[type] || translations['en'].torrent_types[type] || type}</mwc-list-item>`
-    )}
-        </ha-select>
+        </ha-form>
       </div>
     `;
   }
 
   renderSortSelect() {
+
+    const schema = [
+      {
+        name: 'selectedSort',
+        type: 'select',
+        selector: {
+          select: {
+            multiple: false,
+            mode: "dropdown",
+            options: [
+              { label: translations[this.hass.config.language]?.sort_types['name'] || translations['en'].sort_types['name'], value: "name" },
+              { label: translations[this.hass.config.language]?.sort_types['added_date'] || translations['en'].sort_types['added_date'], value: "added_date" },
+              { label: "id", value: "id" },
+              { label: translations[this.hass.config.language]?.sort_types['status'] || translations['en'].sort_types['status'], value: "status" },
+            ],
+          },
+        },
+      },
+    ];
+
     if (this.config.hide_sort) {
       return html``;
     }
 
     return html`
       <div class="titleitem">
-        <ha-select
-          class="type-dropdown"
-          .label=${this.label}
-          @selected=${this._toggleSort}
-          .value=${this.selectedSort}
-          fixedMenuPosition
-          naturalMenuWidth
+        <ha-form
+          .schema=${schema}
+          @value-changed=${this._toggleSort}
         >
-          ${sort_types.map(
-            (type) => html`
-              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
-          )}
-        </ha-select>
+        </ha-form>
       </div>
     `;
   }
 
   renderOrderSelect() {
+
+    const schema = [
+      {
+        name: 'selectedOrder',
+        type: 'select',
+        selector: {
+          select: {
+            multiple: false,
+            mode: "dropdown",
+            options: [
+              { label: translations[this.hass.config.language]?.ascending || translations['en'].ascending, value: "total" },
+              { label: translations[this.hass.config.language]?.descending || translations['en'].descending, value: "total" }
+            ],
+          },
+        },
+      },
+    ];
     if (this.config.hide_order) {
       return html``;
     }
 
     return html`
       <div class="titleitem">
-        <ha-select
-          class="type-dropdown"
-          .label=${this.label}
-          @selected=${this._toggleOrder}
-          .value=${this.selectedOrder}
-          fixedMenuPosition
-          naturalMenuWidth
+        <ha-form
+          .schema=${schema}
+          @value-changed=${this._toggleOrder}
         >
-          ${order_types.map(
-            (type) => html`
-              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
-          )}
-        </ha-select>
+        </ha-form>
       </div>
     `;
   }
 
   renderLimitSelect() {
+
+    const schema = [
+      {
+        name: 'selectedLimit',
+        type: 'select',
+        selector: {
+          select: {
+            multiple: false,
+            mode: "dropdown",
+            options: [
+              { label: "5", value: "5" },
+              { label: "10", value: "10" },
+              { label: "15", value: "15" },
+              { label: translations[this.hass.config.language]?.all || translations['en'].all, value: "all" },
+            ],
+          },
+        },
+      },
+    ];
     if (this.config.hide_limit) {
       return html``;
     }
 
     return html`
       <div class="titleitem">
-        <ha-select
-          class="type-dropdown"
-          .label=${this.label}
-          @selected=${this._toggleLimit}
-          .value=${this.selectedLimit}
-          fixedMenuPosition
-          naturalMenuWidth
+        <ha-form
+          .schema=${schema}
+          @value-changed=${this._toggleOrder}
         >
-          ${limit_types.map(
-            (type) => html`
-              <mwc-list-item .value=${type}>${type}</mwc-list-item>`
-          )}
-        </ha-select>
+        </ha-form>
       </div>
     `;
   }
@@ -979,10 +1044,10 @@ class TransmissionCard extends LitElement {
     .torrent {
       display: grid;
       grid-template-areas:
-      "name     name"
-      "state    button"
+      "name name"
+      "state button"
       "progress button"
-      "details  button";
+      "details button";
       grid-template-columns: 1fr auto;
       grid-column-gap: 1em;
     }
