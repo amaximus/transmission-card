@@ -76,7 +76,7 @@ custom_colors:
 
 Accepted values for default_type are: `total`, `active`,`completed`,`paused`,`started`.
 
-Accepted values for default_sort are: `name`, `added_date`,`id`,`status`.
+Accepted values for default_sort are: `name`, `added_date`,`id`,`status`, `percent`.
 
 Accepted values for default_limit are: `all`, `5`,`10`,`15`.
 
